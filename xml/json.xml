@@ -1,0 +1,54 @@
+<JsonPLUGIN>
+    
+    <TYPES>
+        <TYPE localtype="bigint" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="BIGINT" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="bigint unsigned" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="BIT" jettype="INTEGER" javatype="Integer" />
+        <TYPE localtype="blob" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="BLOB" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="char" jettype="CHAR" javatype="String" />
+        <TYPE localtype="CHAR" jettype="CHAR" javatype="String" />
+        <TYPE localtype="date" jettype="DATE" javatype="java.util.Date" />
+        <TYPE localtype="DATE" jettype="DATE" javatype="java.util.Date" />
+        <TYPE localtype="datetime" jettype="TIMESTAMP" javatype="java.util.Date" />
+        <TYPE localtype="DATETIME" jettype="TIMESTAMP" javatype="java.util.Date" />
+        <TYPE localtype="decimal" jettype="DECIMAL" javatype="java.math.BigDecimal" />
+        <TYPE localtype="DECIMAL" jettype="DECIMAL" javatype="java.math.BigDecimal" />
+        <TYPE localtype="double" jettype="DOUBLE" javatype="Double" />
+        <TYPE localtype="DOUBLE" jettype="DOUBLE" javatype="Double" />
+        <TYPE localtype="float" jettype="DOUBLE" javatype="Double" />
+        <TYPE localtype="image" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="int" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="INT" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="int identity" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="int unsigned" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="INTEGER" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="longtext" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="longblob" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="LONGBLOB" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="mediumblob" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="MEDIUMBLOB" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="money" jettype="DECIMAL" javatype="java.math.BigDecimal" />
+        <TYPE localtype="nchar" jettype="CHAR" javatype="String" />
+        <TYPE localtype="NUMBER" jettype="INTEGER" javatype="Long" />
+        <TYPE localtype="numeric" jettype="DECIMAL" javatype="java.math.BigDecimal" />
+        <TYPE localtype="ntext" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="nvarchar" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="smallint" jettype="INTEGER" javatype="Integer" />
+        <TYPE localtype="text" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="TEXT" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="timestamp" jettype="TIMESTAMP" javatype="java.util.Date" />
+        <TYPE localtype="TIMESTAMP" jettype="TIMESTAMP" javatype="java.util.Date" />
+        <TYPE localtype="tinyint" jettype="INTEGER" javatype="Integer" />
+        <TYPE localtype="tinyint unsigned" jettype="INTEGER" javatype="Integer" />
+        <TYPE localtype="tinytext" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="varbinary" jettype="BLOB" javatype="byte[]" />
+        <TYPE localtype="varchar" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="VARCHAR" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="VARCHAR2" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="STRING" jettype="VARCHAR" javatype="String" />
+        <TYPE localtype="BOOLEAN" jettype="Boolean" javatype="Boolean" />
+    </TYPES>
+    
+</JsonPLUGIN>
