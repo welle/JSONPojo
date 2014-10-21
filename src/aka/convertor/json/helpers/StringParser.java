@@ -1,19 +1,10 @@
 package aka.convertor.json.helpers;
 
-import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.regexp.RE;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import aka.convertor.json.ReservedWord;
 
@@ -23,13 +14,11 @@ import aka.convertor.json.ReservedWord;
  */
 public final class StringParser {
 
-	private static Map<String, Element> mappingType = new HashMap<>();
-
 	/**
 	 * @param databaseName
 	 * @return String
 	 */
-	public static String getJetName(final String databaseName) {
+	public static String getName(final String databaseName) {
 		final String dbName = databaseName.toLowerCase();
 		String ret = "";// new String();
 
@@ -58,7 +47,7 @@ public final class StringParser {
 	 * @param dbFormat
 	 * @return String
 	 */
-	public static String getJetVariableName(final String dbName, final String dbFormat) {
+	public static String getVariableName(final String dbName, final String dbFormat) {
 		assert dbFormat != null;
 
 		if ("OLD".equals(dbFormat)) {
@@ -89,64 +78,14 @@ public final class StringParser {
 		return null;
 	}
 
-	/**
-	 * @param dbName
-	 * @return String
-	 * @throws JETException
-	 */
-	public static String getJetDbType(final String dbName) throws Exception {
-		if (mappingType == null) {
-			initMappingType();
-		}
-		final Element model = mappingType.get(dbName);
-		if (model == null) {
-			throw new Exception("[StringParser] getJetDbType - " + dbName);
-		}
-		return model.getAttribute("jettype");
-	}
-
-	private static void initMappingType() {
-		try {
-			final File file = new File("./xml/json.xml");
-			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			final DocumentBuilder db = dbf.newDocumentBuilder();
-			final Document doc = db.parse(file);
-			doc.getDocumentElement().normalize();
-			System.out.println("Root element " + doc.getDocumentElement().getNodeName());
-			final NodeList nodeLst = doc.getElementsByTagName("TYPE");
-			for (int s = 0; s < nodeLst.getLength(); s++) {
-				final Element fstNode = (Element) nodeLst.item(s);
-				final String key = fstNode.getAttribute("localtype");
-				mappingType.put(key, fstNode);
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * @param dbName
-	 * @return String
-	 * @throws JETException
-	 */
-	public static String getJetJavaType(final String dbName) throws Exception {
-		if (mappingType == null) {
-			initMappingType();
-		}
-		final Element model = mappingType.get(dbName);
-		if (model == null) {
-			throw new Exception("[StringParser] getJetJavaType - " + dbName);
-		}
-		return model.getAttribute("javatype");
-	}
-
 	public static String getLocalName(final String fieldName) {
 		String result = fieldName;
 
 		result = result.replace("@", "");
 		result = result.replace(" ", "");
 		result = result.replace(".", "_");
+		result = result.replace("-", "_");
+		result = result.replace(":", "_");
 
 		if ("$".equals(fieldName)) {
 			result = "value";

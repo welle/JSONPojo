@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author daniel
- * 
+ *
  */
 public class ObjectMetaData {
 
@@ -21,6 +21,7 @@ public class ObjectMetaData {
 	private String javaObjectName;
 	public final Map<String, FieldMetaData> objects = new HashMap<String, FieldMetaData>();
 	private final Map<String, FieldMetaData> fields = new HashMap<String, FieldMetaData>();
+	private boolean containList = false;
 
 	/**
 	 * @param objectName
@@ -28,10 +29,9 @@ public class ObjectMetaData {
 	 * @param rootObject
 	 * @param jsonMetaData
 	 */
-	public ObjectMetaData(final String objectName, final String dbFormat, final JsonNode rootObject,
-	        final JsonMetaData jsonMetaData) {
+	public ObjectMetaData(final String objectName, final String dbFormat, final JsonNode rootObject, final JsonMetaData jsonMetaData) {
 		this.objectName = objectName;
-		this.javaObjectName = StringParser.getJetVariableName(objectName, dbFormat);
+		this.javaObjectName = StringParser.getVariableName(objectName, dbFormat);
 
 		if (rootObject.isArray()) {
 			// array node = must parse all entries
@@ -47,8 +47,7 @@ public class ObjectMetaData {
 		}
 	}
 
-	private void parseElements(final JsonNode currentNode, final JsonMetaData jsonMetaData, final String dbFormat,
-	        final ObjectMetaData objectMetaData) {
+	private void parseElements(final JsonNode currentNode, final JsonMetaData jsonMetaData, final String dbFormat, final ObjectMetaData objectMetaData) {
 		final Iterator<Entry<String, JsonNode>> elements = currentNode.fields();
 		while (elements.hasNext()) {
 			final Entry<String, JsonNode> jsonNode = elements.next();
@@ -56,13 +55,15 @@ public class ObjectMetaData {
 			final JsonNode currentJsonNode = jsonNode.getValue();
 			if (!this.fields.containsKey(fieldName)) {
 				final String serName = fieldName;
-				final FieldMetaData field = new FieldMetaData(fieldName, serName, dbFormat, currentJsonNode,
-				        jsonMetaData, objectMetaData);
+				final FieldMetaData field = new FieldMetaData(fieldName, serName, dbFormat, currentJsonNode, jsonMetaData, objectMetaData);
 
 				if (field.isObject()) {
 					objectMetaData.objects.put(fieldName, field);
 				}
 				objectMetaData.fields.put(fieldName, field);
+				if (field.containList()) {
+					this.containList = field.containList();
+				}
 			} else if (this.objects.containsKey(fieldName)) {
 				// update object
 				final FieldMetaData fieldMetaData = this.objects.get(fieldName);
@@ -107,7 +108,10 @@ public class ObjectMetaData {
 
 	public void changeName(final String newName, final String dbFormat) {
 		this.objectName = newName;
-		this.javaObjectName = StringParser.getJetVariableName(newName, dbFormat);
+		this.javaObjectName = StringParser.getVariableName(newName, dbFormat);
 	}
 
+	public boolean containList() {
+		return this.containList;
+	}
 }

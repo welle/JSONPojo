@@ -25,7 +25,6 @@ public class FieldMetaData {
 	private String localName;
 	private String paramName;
 	private final String serialisableName;
-	private String dbType;
 	private String javaType;
 	private String JavaSubType;
 	private final JsonMetaData jsonMetaData;
@@ -42,8 +41,7 @@ public class FieldMetaData {
 	 * @param jsonMetaData
 	 * @param parentObject
 	 */
-	public FieldMetaData(final String fieldName, final String serName, final String dbFormat, final JsonNode jsonNode, final JsonMetaData jsonMetaData,
-	        final ObjectMetaData parentObject) {
+	public FieldMetaData(final String fieldName, final String serName, final String dbFormat, final JsonNode jsonNode, final JsonMetaData jsonMetaData, final ObjectMetaData parentObject) {
 		this.jsonMetaData = jsonMetaData;
 		this.localName = StringParser.getLocalName(fieldName);
 		this.paramName = StringParser.getLocalName(fieldName);
@@ -66,8 +64,6 @@ public class FieldMetaData {
 
 		if (((isArray && jsonNode.elements().next().fields().hasNext())) || jsonNode.isObject()) {
 			// field is an object or an array of object/field
-			this.dbType = "";
-			this.dbType = null;
 			this.size = 0;
 			this.decimals = 0;
 			this.isObject = true;
@@ -127,27 +123,18 @@ public class FieldMetaData {
 
 	private <T> void setType(final Class<T> className, final boolean isArray) {
 		try {
-			final String type = className.getSimpleName().toUpperCase();
+			final String type = className.getSimpleName();
 
 			if (isArray) {
 				// this is a list
 				this.javaType = "List";
-				this.JavaSubType = StringParser.getJetJavaType(type);
+				this.JavaSubType = type;
 			} else {
-				this.javaType = StringParser.getJetJavaType(type);
+				this.javaType = type;
 			}
-			this.dbType = StringParser.getJetDbType(type);
 		} catch (final Exception e) {
-			System.err.println("[FieldMetaData] FieldMetaData - Error processing column [" + this.localName + "] in field [" + this.localName + "] :: "
-			        + e.getMessage());
+			System.err.println("[FieldMetaData] FieldMetaData - Error processing column [" + this.localName + "] in field [" + this.localName + "] :: " + e.getMessage());
 		}
-	}
-
-	/**
-	 * @return String
-	 */
-	public String getDbType() {
-		return this.dbType;
 	}
 
 	/**
@@ -228,5 +215,9 @@ public class FieldMetaData {
 
 	public ObjectMetaData getObject() {
 		return this.object;
+	}
+
+	public boolean containList() {
+		return "List".equals(this.javaType);
 	}
 }

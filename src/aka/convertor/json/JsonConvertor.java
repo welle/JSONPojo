@@ -3,6 +3,7 @@ package aka.convertor.json;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -21,31 +22,27 @@ import freemarker.template.TemplateException;
 
 public class JsonConvertor {
 
-	public JsonConvertor(@NonNull String jsonToParse) {
-		final JsonMetaData jsonMetaData = new JsonMetaData("Glossary", "Glossary", "NEW", jsonToParse);
+	public JsonConvertor(@NonNull String name, @NonNull String jsonToParse, @NonNull String packageName, @NonNull String path) {
+		final JsonMetaData jsonMetaData = new JsonMetaData(name, name, "NEW", jsonToParse);
 		final ArrayList<ObjectMetaData> objects = jsonMetaData.getObjects();
 		System.out.println("[JSON2XMLToolNut] componentClicked - Processing tables :: " + objects.size());
 		for (final ObjectMetaData object : objects) {
-			final Map<String, Object> context = new HashMap<>();
-			context.put("metadata", jsonMetaData);
-			context.put("util", new StringUtility());
-			context.put("object", object);
-
 			System.out.println("[JSON2XMLToolNut] componentClicked - Processing table :: " + object.getObjectName());
 			// Configure Freemarker
 			final Configuration cfg = new Configuration();
 			try {
 				// Load the template
-				final Template template = cfg.getTemplate("./src/aka/convertor/json/pojo/gsonPojoFromDM.tpl");
+				final Template template = cfg.getTemplate("./src/aka/convertor/json/pojo/gsonPojo.tpl");
 
 				final Map<String, Object> data = new HashMap<String, Object>();
-				data.put("package", "Hello World!");
+				data.put("package", packageName);
 				final Component component = new Component();
-				component.setName(object.getObjectName());
-
+				component.setName(object.getJavaObjectName());
+				component.setNodes(object.getFields());
 				data.put("comp", component);
 
-				final Writer out = new OutputStreamWriter(System.out);
+				final FileOutputStream fos = new FileOutputStream(path + StringUtility.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
+				final Writer out = new OutputStreamWriter(fos);
 				template.process(data, out);
 				out.flush();
 			} catch (final IOException e) {
@@ -57,8 +54,8 @@ public class JsonConvertor {
 		}
 	}
 
-	private void generateFromDMComponent(final String project, final String pojoPackage, final File srcDir, final String dstBasePath, final String dmPath,
-	        final Map<String, Model> dmModelMap) throws JETException {
+	private void generateFromDMComponent(final String project, final String pojoPackage, final File srcDir, final String dstBasePath, final String dmPath, final Map<String, Model> dmModelMap)
+	        throws JETException {
 		if (this.fileCtxt.isDirectory(srcDir)) {
 			final File[] files = this.fileCtxt.listFiles(srcDir);
 			for (int i = 0; i < files.length; i++) {
@@ -98,8 +95,7 @@ public class JsonConvertor {
 
 					this.fileCtxt.createDirectories(dstBasePath + JAVASOURCE_PLAIN + pojoPackage + dmPath);
 
-					mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/package.vm", context, dstBasePath + JAVASOURCE_PLAIN + pojoPackage + dmPath
-					        + "/package.html");
+					mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/package.vm", context, dstBasePath + JAVASOURCE_PLAIN + pojoPackage + dmPath + "/package.html");
 				}
 
 				final String parser = this.parserFormat.getSelectedItemName();
@@ -136,11 +132,10 @@ public class JsonConvertor {
 
 		final String javasourcePath = basePath + JAVASOURCE_PLAIN;
 
-		logp(JETLevel.INFO, "DataModelUtilsToolNut", "generateJacksonMapper", "Generating Jackson Mapper [" + rootComponent.getRoot() + "] basePath ["
-		        + basePath + "] pkgPath [" + pkgPath + "] dmPath [" + dmPath + "]");
+		logp(JETLevel.INFO, "DataModelUtilsToolNut", "generateJacksonMapper", "Generating Jackson Mapper [" + rootComponent.getRoot() + "] basePath [" + basePath + "] pkgPath [" + pkgPath
+		        + "] dmPath [" + dmPath + "]");
 
-		mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/jacksonObjectMapper.vm", context, javasourcePath + pkgPath + "/jackson/" + rootComponent.getRoot()
-		        + "JacksonMapper.java");
+		mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/jacksonObjectMapper.vm", context, javasourcePath + pkgPath + "/jackson/" + rootComponent.getRoot() + "JacksonMapper.java");
 
 		// generate deserialiser
 		String deserialiserPath = null;
@@ -166,12 +161,11 @@ public class JsonConvertor {
 					contextDeserialiser.put("package", this.pojoPackageText.getText() + pkgExtra + "." + nameToUseStr + ".jackson.deserialisers");
 				}
 
-				logp(JETLevel.INFO, "DataModelUtilsToolNut", "generateJacksonMapper", "Generating Jackson Deserialiser [" + deserialiseItem.getName()
-				        + "] basePath [" + basePath + "] pkgPath [" + pkgPath + "] dmPath [" + dmPath + "]");
+				logp(JETLevel.INFO, "DataModelUtilsToolNut", "generateJacksonMapper", "Generating Jackson Deserialiser [" + deserialiseItem.getName() + "] basePath [" + basePath + "] pkgPath ["
+				        + pkgPath + "] dmPath [" + dmPath + "]");
 
 				if (deserialiser.getType().equals("Date")) {
-					mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/jacksonDateDeserialiser.vm", contextDeserialiser,
-					        deserialiserPath + deserialiseItem.getName() + "Deserializer.java");
+					mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/jacksonDateDeserialiser.vm", contextDeserialiser, deserialiserPath + deserialiseItem.getName() + "Deserializer.java");
 				}
 			}
 		}
@@ -184,8 +178,8 @@ public class JsonConvertor {
 			return;
 		}
 
-		logp(JETLevel.INFO, "DataModelUtilsToolNut", "generatePojoFromDM", "Generating pojo [" + dmComponent.getName() + "] basePath [" + basePath
-		        + "] pkgPath [" + pkgPath + "] dmPath [" + dmPath + "]");
+		logp(JETLevel.INFO, "DataModelUtilsToolNut", "generatePojoFromDM", "Generating pojo [" + dmComponent.getName() + "] basePath [" + basePath + "] pkgPath [" + pkgPath + "] dmPath [" + dmPath
+		        + "]");
 
 		final Map<String, Object> context = new HashMap<String, Object>();
 		context.put("comp", dmComponent);
@@ -205,11 +199,9 @@ public class JsonConvertor {
 		}
 
 		if ("GSON".equals(parser)) {
-			mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/gsonPojoFromDM.vm", context, javasourcePath + pkgPath + "gson/" + dmComponent.getName()
-			        + ".java");
+			mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/gsonPojoFromDM.vm", context, javasourcePath + pkgPath + "gson/" + dmComponent.getName() + ".java");
 		} else if ("JACKSON".equals(parser)) {
-			mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/jacksonPojoFromDM.vm", context, javasourcePath + pkgPath + "jackson/" + dmComponent.getName()
-			        + ".java");
+			mergeTemplate("JsonTool", "JsonPlugin/vtl/java/pojo/jacksonPojoFromDM.vm", context, javasourcePath + pkgPath + "jackson/" + dmComponent.getName() + ".java");
 		}
 
 	}
@@ -336,8 +328,8 @@ public class JsonConvertor {
 		}
 	}
 
-	private void generateDataModels(final File srcDir, final String scrPath, final String dstBasePath, final Model dataModelsModel, final int level,
-	        final Map<String, EJBComponent> ejbCompMap) throws JETException {
+	private void generateDataModels(final File srcDir, final String scrPath, final String dstBasePath, final Model dataModelsModel, final int level, final Map<String, EJBComponent> ejbCompMap)
+	        throws JETException {
 		final File[] files = this.fileCtxt.listFiles(srcDir);
 		for (int i = 0; i < files.length; i++) {
 			final File file = files[i];
@@ -395,8 +387,8 @@ public class JsonConvertor {
 		return srcModel;
 	}
 
-	private void generateJetDM(final File file, final String newFilePath, final Model dataModelsModel, final Model listItemModel,
-	        final Map<String, EJBComponent> ejbCompMap) throws JETException, IOException {
+	private void generateJetDM(final File file, final String newFilePath, final Model dataModelsModel, final Model listItemModel, final Map<String, EJBComponent> ejbCompMap) throws JETException,
+	        IOException {
 		final EJBComponent ejbComponent = getEJBComponent(file, ejbCompMap);
 
 		final String name = ejbComponent.getName();
@@ -418,16 +410,4 @@ public class JsonConvertor {
 			dataModelsModel.appendChild(listItemModel);
 		}
 	}
-
-	private EJBComponent getEJBComponent(final File file, final Map<String, EJBComponent> ejbCompMap) throws JETException {
-		final String fileName = file.getName();
-		final String name = fileName.replaceAll(".xml", "");
-		EJBComponent ejbComponent = ejbCompMap.get(name);
-		if (ejbComponent == null) {
-			ejbComponent = EJBComponent.getInstance(file, true, this.fileCtxt, this.xmlCtxt, this.velocityCtxt, getLogger());
-			ejbCompMap.put(name, ejbComponent);
-		}
-		return ejbComponent;
-	}
-
 }
