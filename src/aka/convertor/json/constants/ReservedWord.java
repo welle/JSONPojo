@@ -1,4 +1,4 @@
-package aka.convertor.json;
+package aka.convertor.json.constants;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -217,7 +217,11 @@ public class FieldMetaData {
 		return this.object;
 	}
 
-	public boolean containList() {
+	public boolean isAList() {
 		return "List".equals(this.javaType);
+	}
+
+	public JsonMetaData getJsonMetaData() {
+		return this.jsonMetaData;
 	}
 }

@@ -6,7 +6,7 @@ import java.security.PrivilegedExceptionAction;
 
 import org.apache.regexp.RE;
 
-import aka.convertor.json.ReservedWord;
+import aka.convertor.json.constants.ReservedWord;
 
 /**
  * @author daniel

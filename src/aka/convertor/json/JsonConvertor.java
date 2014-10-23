@@ -32,7 +32,7 @@ public class JsonConvertor {
 			final Configuration cfg = new Configuration();
 			try {
 				// Load the template
-				final Template template = cfg.getTemplate("./src/aka/convertor/json/pojo/gsonPojo.tpl");
+				final Template template = cfg.getTemplate("./src/aka/convertor/json/tpl/jacksonPojo.tpl");
 
 				final Map<String, Object> data = new HashMap<String, Object>();
 				data.put("package", packageName);

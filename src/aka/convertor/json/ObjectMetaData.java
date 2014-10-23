@@ -61,8 +61,8 @@ public class ObjectMetaData {
 					objectMetaData.objects.put(fieldName, field);
 				}
 				objectMetaData.fields.put(fieldName, field);
-				if (field.containList()) {
-					this.containList = field.containList();
+				if (field.isAList()) {
+					this.containList = field.isAList();
 				}
 			} else if (this.objects.containsKey(fieldName)) {
 				// update object

@@ -7,72 +7,6 @@ package aka.convertor.json.helpers;
 public class StringUtility {
 
 	/**
-	 * @param node
-	 * @return String
-	 */
-	static public String getImutType(final DMNode node) {
-		String type = null;
-		if ("false".equals(node.getNullable())) {
-			type = getNonNullImutType(node);
-		} else {
-			type = getNullableImutType(node);
-		}
-		return type;
-	}
-
-	/**
-	 * @param node
-	 * @return String
-	 */
-	static public String getNullableImutType(final DMNode node) {
-		String type = null;
-		if (isDate(node.getType())) {
-			if ("TIMESTAMP".equals(node.getSubType())) {
-				type = "jet.java.time.@Nullable LocalDateTime";
-			} else {
-				type = "jet.java.time.@Nullable LocalDate";
-			}
-		} else if ("java.lang.Object".equals(node.getType())) {
-			type = "java.lang.@Nullable Object";
-		} else if ("java.math.BigDecimal".equals(node.getType())) {
-			type = "java.math.@Nullable BigDecimal";
-		} else if ("Object[]".equals(node.getType())) {
-			type = "Object @Nullable []";
-		} else if ("byte[]".equals(node.getType())) {
-			type = "byte[]";
-		} else {
-			type = "@Nullable " + node.getType();
-		}
-		return type;
-	}
-
-	/**
-	 * @param node
-	 * @return String
-	 */
-	static public String getNonNullImutType(final DMNode node) {
-		String type = null;
-		if (isDate(node.getType())) {
-			if ("TIMESTAMP".equals(node.getSubType())) {
-				type = "jet.java.time.@NonNull LocalDateTime";
-			} else {
-				type = "jet.java.time.@NonNull LocalDate";
-			}
-		} else if ("java.lang.Object".equals(node.getType())) {
-			type = "java.lang.@NonNull Object";
-		} else if ("java.math.BigDecimal".equals(node.getType())) {
-			type = "java.math.@NonNull BigDecimal";
-		} else if ("Object[]".equals(node.getType())) {
-			type = "Object @NonNull []";
-		} else if ("byte[]".equals(node.getType())) {
-			type = "byte[]";
-		} else {
-			type = "@NonNull " + node.getType();
-		}
-		return type;
-	}
-
-	/**
 	 * @param type
 	 *            java type
 	 * @return String annotated type
@@ -116,26 +50,6 @@ public class StringUtility {
 			result = "@NonNull " + type;
 		}
 		return result;
-	}
-
-	/**
-	 * @param javaType
-	 * @return String
-	 */
-	static public String getType(final String javaType) {
-		if (isInteger(javaType)) {
-			return "INTEGER";
-		} else if (isDouble(javaType)) {
-			return "DOUBLE";
-		} else if (isDate(javaType)) {
-			return "DATE";
-		} else if (isText(javaType)) {
-			return "TEXT";
-		} else if (isBlob(javaType)) {
-			return "BLOB";
-		} else {
-			return "Error processing type : " + javaType;
-		}
 	}
 
 	/**
