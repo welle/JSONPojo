@@ -2,6 +2,7 @@ package aka.convertor.json;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,43 +15,104 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import aka.convertor.json.constants.AnnotationType;
 import aka.convertor.json.data.Component;
 import aka.convertor.json.helpers.StringUtility;
+
+import com.sun.istack.internal.Nullable;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 public class JsonConvertor {
 
-	public JsonConvertor(@NonNull String name, @NonNull String jsonToParse, @NonNull String packageName, @NonNull String path) {
+	public JsonConvertor(@NonNull String name, @NonNull String jsonToParse, @NonNull String packageName, @NonNull String path, @Nullable String author, @NonNull AnnotationType annotationType) {
 		final JsonMetaData jsonMetaData = new JsonMetaData(name, name, "NEW", jsonToParse);
-		final ArrayList<ObjectMetaData> objects = jsonMetaData.getObjects();
-		System.out.println("[JSON2XMLToolNut] componentClicked - Processing tables :: " + objects.size());
-		for (final ObjectMetaData object : objects) {
-			System.out.println("[JSON2XMLToolNut] componentClicked - Processing table :: " + object.getObjectName());
-			// Configure Freemarker
-			final Configuration cfg = new Configuration();
-			try {
-				// Load the template
-				final Template template = cfg.getTemplate("./src/aka/convertor/json/tpl/jacksonPojo.tpl");
 
+		// objects
+		final Configuration cfg = new Configuration();
+		// Configure Freemarker
+		cfg.setClassForTemplateLoading(getClass(), "./tpl");
+		try {
+			// Load the template
+			final Template template = cfg.getTemplate("jacksonPojo.tpl");
+			final ArrayList<ObjectMetaData> objects = jsonMetaData.getObjects();
+			System.out.println("[JSON2XMLToolNut] componentClicked - Processing tables :: " + objects.size());
+			for (final ObjectMetaData object : objects) {
+				System.out.println("[JSON2XMLToolNut] componentClicked - Processing table :: " + object.getObjectName());
 				final Map<String, Object> data = new HashMap<String, Object>();
 				data.put("package", packageName);
-				final Component component = new Component();
+				final Component component = new Component(annotationType);
 				component.setName(object.getJavaObjectName());
 				component.setNodes(object.getFields());
+				component.setAuthor(author);
 				data.put("comp", component);
 
-				final FileOutputStream fos = new FileOutputStream(path + StringUtility.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
+				final FileOutputStream fos = new FileOutputStream(path + "/" + StringUtility.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
 				final Writer out = new OutputStreamWriter(fos);
 				template.process(data, out);
 				out.flush();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			} catch (final TemplateException e) {
-				e.printStackTrace();
 			}
-			final OutputStreamWriter osw = null;
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} catch (final TemplateException e) {
+			e.printStackTrace();
+		}
+
+		// object mapper
+		try {
+			final Template templateMapper = cfg.getTemplate("jacksonObjectMapper.tpl");
+			System.out.println("[JSON2XMLToolNut] componentClicked - Processing Object mapper");
+			// Load the template
+			final Map<String, Object> data = new HashMap<String, Object>();
+			data.put("package", packageName);
+			final Component component = new Component(annotationType);
+			component.setName(name);
+			component.setAuthor(author);
+			data.put("comp", component);
+
+			final FileOutputStream fos = new FileOutputStream(path + "/" + StringUtility.firstLetterUpperCase(name) + "JacksonMapper.java");
+			final Writer out = new OutputStreamWriter(fos);
+			templateMapper.process(data, out);
+			out.flush();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} catch (final TemplateException e) {
+			e.printStackTrace();
+		}
+		final OutputStreamWriter osw = null;
+
+		// Deserialisers
+		try {
+			// Load the template
+			final Template template = cfg.getTemplate("jacksonDateDeserialiser.tpl");
+			final List<Deserialiser> deserializers = jsonMetaData.getDeserialises();
+			System.out.println("Processing Deserializers :: " + deserializers.size());
+			for (final Deserialiser deserialiser : deserializers) {
+				System.out.println("[JSON2XMLToolNut] componentClicked - Processing table :: " + deserialiser.getType());
+
+				final List<DeserialiseItem> subDeserializers = deserialiser.getItems();
+				for (final DeserialiseItem deserialiseItem : subDeserializers) {
+					final Map<String, Object> data = new HashMap<String, Object>();
+					data.put("package", packageName);
+					final Component component = new Component(annotationType);
+					component.setName(deserialiseItem.getName());
+					component.setAuthor(author);
+					data.put("comp", component);
+					data.put("deserialiser", deserialiseItem);
+
+					final FileOutputStream fos = new FileOutputStream(path + "/" + StringUtility.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
+					final Writer out = new OutputStreamWriter(fos);
+					template.process(data, out);
+					out.flush();
+				}
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} catch (final TemplateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -6,13 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * see DatabaseMetaData.html#getColumns(java.lang.String,%20java.lang.String,%20
- * java.lang.String,%20java.lang.String) for details on the available metadata
- *
- * @author daniel
- *
- */
 public class Deserialiser {
 
 	private final String type;

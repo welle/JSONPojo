@@ -15,11 +15,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
  * 
  * @author JetToolsFramework
  */ 
-public final class ${deserialiser.Name}Deserializer extends JsonDeserializer<Date> {
+public final class ${deserialiser.getName()?cap_first}Deserializer extends JsonDeserializer<Date> {
 
     @Override
     public final Date deserialize(final JsonParser jsonparser, final DeserializationContext deserializationcontext) throws IOException, JsonProcessingException {
-        final SimpleDateFormat format = new SimpleDateFormat("${deserialiser.Format}");
+        final SimpleDateFormat format = new SimpleDateFormat("${deserialiser.getFormat()}");
         final String date = jsonparser.getText();
         try {
             return format.parse(date);
