@@ -1,10 +1,8 @@
 package aka.convertor.examples.example3;
 
-
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * This is a generated file.

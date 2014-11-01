@@ -1,7 +1,6 @@
 package aka.convertor.examples.example3;
 
 import java.net.URI;
-
 import org.eclipse.jdt.annotation.Nullable;
 import aka.convertor.examples.example3.deserializers.URLDeserializer;
 

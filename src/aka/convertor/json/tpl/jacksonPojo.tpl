@@ -19,19 +19,27 @@ import java.util.Date;
 </#list>
 <#if comp.containList() == true>
 import java.util.List;
-</#if>
 
+</#if>
 <#if comp.getAnnotations() == "eclipse">
 	<#if comp.containList() == true>
 import org.eclipse.jdt.annotation.NonNull;
 	</#if>
-import org.eclipse.jdt.annotation.Nullable;
 	<#elseif comp.getAnnotations() == "jsr">
 	<#if comp.containList() == true>
 import javax.annotation.Nonnull;
 	</#if>
-import javax.annotation.Nullable;
 </#if>
+<#list comp.getNodes() as column>  
+	<#if column.getJavaType() != "List">
+		<#if comp.getAnnotations() == "eclipse">
+import org.eclipse.jdt.annotation.Nullable;
+		<#elseif comp.getAnnotations() == "jsr">
+import javax.annotation.Nullable;
+		</#if>
+		<#break>
+	</#if>
+</#list>
 <#list comp.getNodes() as column>  
 	<#if column.getJavaType() == "Date" || column.getJavaType() == "URI">
 		<#if (!myList?seq_contains(column.getDeserName()))>
@@ -47,7 +55,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 <#if comp.containJsonProperty()>
 import com.fasterxml.jackson.annotation.JsonProperty;
 </#if>
-<#if (comp.containDeserialiser() == true)>
+<#if myList?has_content>
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 </#if>
 

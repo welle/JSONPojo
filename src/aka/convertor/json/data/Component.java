@@ -62,18 +62,6 @@ public class Component {
 		return result;
 	}
 
-	public boolean containDeserialiser() {
-		boolean result = false;
-		for (final FieldMetaData fieldMetaData : this.fields) {
-			result = !fieldMetaData.getJsonMetaData().getDeserialises().isEmpty();
-			if (result) {
-				// found, just break;
-				break;
-			}
-		}
-		return result;
-	}
-
 	public void setAuthor(@Nullable String author) {
 		this.author = author;
 	}
