@@ -104,6 +104,10 @@ public final class StringParser {
 			result = sb.toString();
 		}
 
+		if (isNumber(result)) {
+			result = "value" + result;
+		}
+
 		if (ReservedWord.RESERVED_WORDS.contains(result.toLowerCase())) {
 			result = result.concat("Res");
 		}
@@ -111,4 +115,12 @@ public final class StringParser {
 		return result;
 	}
 
+	private static boolean isNumber(String string) {
+		try {
+			Long.parseLong(string);
+		} catch (final Exception e) {
+			return false;
+		}
+		return true;
+	}
 }
