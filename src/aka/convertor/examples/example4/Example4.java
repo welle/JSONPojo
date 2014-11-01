@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public final class Example4 {
 
 	@Nullable
-    private String apiVersion;
-	@Nullable
-    private Data data;
+    private Menu menu;
 
 	/**
      * Empty Constructor.
@@ -27,50 +25,29 @@ public final class Example4 {
     /**
      * Filling Constructor.
      *
-     * @param apiVersionParam String
-     * @param dataParam Data
+     * @param menuParam Menu
      */
-    public Example4(@Nullable final String apiVersionParam, @Nullable final Data dataParam) {
-        this.apiVersion = apiVersionParam;
-        this.data = dataParam;
+    public Example4(@Nullable final Menu menuParam) {
+        this.menu = menuParam;
     }
     
     /**
-     * Get value of apiVersion.
+     * Get value of menu.
      *
-     * @return String value of apiVersion
+     * @return Menu value of menu
      */
     @Nullable
-    public final String getApiVersion() {
-        return this.apiVersion;
-    }
-    
-    /**
-     * Get value of data.
-     *
-     * @return Data value of data
-     */
-    @Nullable
-    public final Data getData() {
-        return this.data;
+    public final Menu getMenu() {
+        return this.menu;
     }
 
     
     /**
-     * Set value of apiVersion.
+     * Set value of menu.
      *
-     * @param apiVersionParam
+     * @param menuParam
      */
-    public final void setApiVersion(@Nullable final String apiVersionParam) {
-        this.apiVersion = apiVersionParam;
-    }
-    
-    /**
-     * Set value of data.
-     *
-     * @param dataParam
-     */
-    public final void setData(@Nullable final Data dataParam) {
-        this.data = dataParam;
+    public final void setMenu(@Nullable final Menu menuParam) {
+        this.menu = menuParam;
     }
 }
