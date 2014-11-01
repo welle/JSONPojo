@@ -27,7 +27,8 @@ import freemarker.template.TemplateException;
 
 public class JsonConvertor {
 
-	public JsonConvertor(@NonNull String name, @NonNull String jsonToParse, @NonNull String packageName, @NonNull String path, @Nullable String author, @NonNull AnnotationType annotationType) {
+	public JsonConvertor(@NonNull String name, @NonNull String jsonToParse, @NonNull String packageName, @NonNull String path, @NonNull String subPath, @Nullable String author,
+			@NonNull AnnotationType annotationType) {
 		final JsonMetaData jsonMetaData = new JsonMetaData(name, name, "NEW", jsonToParse);
 
 		// objects
@@ -48,6 +49,7 @@ public class JsonConvertor {
 				component.setNodes(object.getFields());
 				component.setAuthor(author);
 				data.put("comp", component);
+				data.put("deserialisers", subPath);
 
 				final FileOutputStream fos = new FileOutputStream(path + "/" + StringUtility.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
 				final Writer out = new OutputStreamWriter(fos);
@@ -86,26 +88,55 @@ public class JsonConvertor {
 		// Deserialisers
 		try {
 			// Load the template
-			final Template template = cfg.getTemplate("jacksonDateDeserialiser.tpl");
+
 			final List<Deserialiser> deserializers = jsonMetaData.getDeserialises();
 			System.out.println("Processing Deserializers :: " + deserializers.size());
+
+			String filePath = path + "/";
+			if (!deserializers.isEmpty()) {
+				if (subPath != null && subPath.trim().length() > 0) {
+					filePath = filePath + subPath + "/";
+					final File theDir = new File(filePath);
+
+					// if the directory does not exist, create it
+					if (!theDir.exists()) {
+						try {
+							theDir.mkdir();
+						} catch (final SecurityException se) {
+							// handle it
+						}
+					}
+				}
+			}
+
+			String deserializersString = packageName;
+			if (subPath != null && subPath.trim().length() > 0) {
+				deserializersString = deserializersString + "." + subPath;
+			}
 			for (final Deserialiser deserialiser : deserializers) {
+				Template template = null;
 				System.out.println("[JSON2XMLToolNut] componentClicked - Processing table :: " + deserialiser.getType());
+				if ("Date".equals(deserialiser.getType())) {
+					template = cfg.getTemplate("jacksonDateDeserialiser.tpl");
+				} else if ("URL".equals(deserialiser.getType())) {
+					template = cfg.getTemplate("jacksonURLDeserialiser.tpl");
+				}
+				if (template != null) {
+					final List<DeserialiseItem> subDeserializers = deserialiser.getItems();
+					for (final DeserialiseItem deserialiseItem : subDeserializers) {
+						final Map<String, Object> data = new HashMap<String, Object>();
+						data.put("package", deserializersString);
+						final Component component = new Component(annotationType);
+						component.setName(deserialiseItem.getName());
+						component.setAuthor(author);
+						data.put("comp", component);
+						data.put("deserialiser", deserialiseItem);
 
-				final List<DeserialiseItem> subDeserializers = deserialiser.getItems();
-				for (final DeserialiseItem deserialiseItem : subDeserializers) {
-					final Map<String, Object> data = new HashMap<String, Object>();
-					data.put("package", packageName);
-					final Component component = new Component(annotationType);
-					component.setName(deserialiseItem.getName());
-					component.setAuthor(author);
-					data.put("comp", component);
-					data.put("deserialiser", deserialiseItem);
-
-					final FileOutputStream fos = new FileOutputStream(path + "/" + StringUtility.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
-					final Writer out = new OutputStreamWriter(fos);
-					template.process(data, out);
-					out.flush();
+						final FileOutputStream fos = new FileOutputStream(filePath + StringUtility.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
+						final Writer out = new OutputStreamWriter(fos);
+						template.process(data, out);
+						out.flush();
+					}
 				}
 			}
 		} catch (final IOException e) {

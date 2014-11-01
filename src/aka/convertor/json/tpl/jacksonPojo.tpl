@@ -1,7 +1,25 @@
 package ${package};
 <#assign myList = []>
 <#assign compSize = comp.getNodes()?size - 1>
-<#assign importedDate = false>
+
+<#list comp.getNodes() as column>  
+	<#if column.getJavaType() == "URI">
+import java.net.URI;
+	<#break>
+	</#if>
+</#list>
+<#if comp.containList() == true>
+import java.util.ArrayList;
+</#if>
+<#list comp.getNodes() as column>  
+	<#if column.getJavaType() == "Date">
+import java.util.Date;
+	<#break>
+	</#if>
+</#list>
+<#if comp.containList() == true>
+import java.util.List;
+</#if>
 
 <#if comp.getAnnotations() == "eclipse">
 	<#if comp.containList() == true>
@@ -15,22 +33,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 </#if>
 <#list comp.getNodes() as column>  
-	<#if column.getJavaType() == "Date">
-		<#if importedDate == false>
-			<#assign importedDate = true>
-import java.util.Date;
-		</#if>
+	<#if column.getJavaType() == "Date" || column.getJavaType() == "URI">
 		<#if (!myList?seq_contains(column.getDeserName()))>
 			<#assign myList = myList + [column.getDeserName()]>
-import ${package}.deserialisers.${column.getDeserName()}Deserializer;
+			<#if deserialisers??>
+import ${package}.${deserialisers}.${column.getDeserName()}Deserializer;
+			</#if>
 		</#if>
 	</#if>
 </#list>
 
-<#if comp.containList() == true>
-import java.util.ArrayList;
-import java.util.List;
-</#if>
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 <#if comp.containJsonProperty()>
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,6 +73,9 @@ public final class ${comp.getName()?cap_first} {
 		</#if>
     private List<${column.getJavaSubType()}> ${column.getParamName()} = new ArrayList<>();
 	<#elseif (column.getJavaType() == "Date" )>
+    @JsonDeserialize(using = ${column.getDeserName()}Deserializer.class)
+    private ${column.getJavaType()} ${column.getParamName()};
+    <#elseif (column.getJavaType() == "URI" )>
     @JsonDeserialize(using = ${column.getDeserName()}Deserializer.class)
     private ${column.getJavaType()} ${column.getParamName()};
 	<#else>

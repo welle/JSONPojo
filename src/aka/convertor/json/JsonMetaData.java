@@ -109,15 +109,15 @@ public class JsonMetaData {
 		return new ArrayList(Arrays.asList(this.deserialiseList.values().toArray()));
 	}
 
-	public void addDeserialiser(final String type, final String dateName, final String pattern) {
+	public void addDeserialiser(final String type, final String name, final String pattern) {
 		Deserialiser deserialiser = this.deserialiseList.get(type);
 		if (deserialiser == null) {
 			deserialiser = new Deserialiser(type);
 			this.deserialiseList.put(type, deserialiser);
 		}
 
-		final DeserialiseItem item = new DeserialiseItem(dateName, pattern);
-		deserialiser.addDeserialiseItem(dateName, item);
+		final DeserialiseItem item = new DeserialiseItem(name, pattern);
+		deserialiser.addDeserialiseItem(name, item);
 	}
 
 }

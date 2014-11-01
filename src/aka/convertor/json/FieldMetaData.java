@@ -2,11 +2,13 @@ package aka.convertor.json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.Date;
 
 import aka.convertor.json.helpers.DateHelper;
 import aka.convertor.json.helpers.StringParser;
 import aka.convertor.json.helpers.StringUtility;
+import aka.convertor.json.helpers.URLHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -101,19 +103,27 @@ public class FieldMetaData {
 		} else {
 			// check if this is a date
 			final String value = jsonNode.textValue();
-			if (value != null) {
+			if (value == null) {
+				setType(String.class, isArray);
+			} else {
 				final String dateName = DateHelper.parseDate(value);
-				if (dateName != null) {
+				if (dateName == null) {
+					final boolean isURL = URLHelper.isURL(value);
+					if (isURL) {
+						setType(URI.class, isArray);
+						// add deserialiser
+						this.jsonMetaData.addDeserialiser("URL", "URL", null);
+						this.deserName = "URL";
+					} else {
+						setType(String.class, isArray);
+					}
+				} else {
 					setType(Date.class, isArray);
 					// add deserialiser
 					final String pattern = DateHelper.dateNameFormatMap.get(dateName);
 					this.jsonMetaData.addDeserialiser("Date", dateName, pattern);
 					this.deserName = dateName;
-				} else {
-					setType(String.class, isArray);
 				}
-			} else {
-				setType(String.class, isArray);
 			}
 
 			// check if this is an url string

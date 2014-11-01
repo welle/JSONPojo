@@ -42,7 +42,8 @@ public class Examples {
 		// }
 		try {
 			final String jsonToParse = new String(Files.readAllBytes(Paths.get("./xml/examples/example3.txt")));
-			final JsonConvertor jsonConvertor = new JsonConvertor("Example3", jsonToParse, "aka.convertor.examples.example3", "./src/aka/convertor/examples/example3/", "Welle", AnnotationType.ECLIPSE);
+			final JsonConvertor jsonConvertor = new JsonConvertor("Example3", jsonToParse, "aka.convertor.examples.example3", "./src/aka/convertor/examples/example3/", "deserializers", "Welle",
+			        AnnotationType.ECLIPSE);
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
