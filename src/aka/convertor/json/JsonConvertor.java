@@ -35,6 +35,7 @@ public class JsonConvertor {
 	private final String packageName;
 	@NonNull
 	private Generator generator = Generator.JACKSON;
+	private boolean useList = true;
 
 	public JsonConvertor(@NonNull final String packageName, @NonNull final String name, @NonNull final String jsonToParse, @NonNull final String path) {
 		this.jsonMetaData = new JsonMetaData(name, jsonToParse);
@@ -45,11 +46,38 @@ public class JsonConvertor {
 
 	public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, @NonNull final AnnotationType annotationType) {
 		this.annotation = annotationType;
-		this.generator = generator;
-		generateAll(subPath, author);
+		generateAll(generator, subPath, author);
 	}
 
-	public void generateAll(@Nullable final String subPath, @Nullable final String author) {
+	public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, @NonNull final AnnotationType annotationType, final boolean useList) {
+		this.annotation = annotationType;
+		this.useList = useList;
+		generateAll(generator, subPath, author);
+	}
+
+	public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, final boolean useList) {
+		this.useList = useList;
+		generateAll(generator, subPath, author);
+	}
+
+	public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @NonNull final AnnotationType annotationType, final boolean useList) {
+		this.annotation = annotationType;
+		this.useList = useList;
+		generateAll(generator, subPath, null);
+	}
+
+	public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, final boolean useList) {
+		this.useList = useList;
+		generateAll(generator, subPath, null);
+	}
+
+	public void generateAll(@NonNull final Generator generator, final boolean useList) {
+		this.useList = useList;
+		generateAll(generator, null, null);
+	}
+
+	public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author) {
+		this.generator = generator;
 		// objects
 		final Configuration cfg = getConfiguration();
 		generatePojos(subPath, author, cfg);
@@ -135,6 +163,8 @@ public class JsonConvertor {
 			data.put("package", this.packageName);
 			final Component component = new Component(this.name, this.annotation, author);
 			data.put("comp", component);
+			data.put("isRootAnArray", this.jsonMetaData.isRootAnArray());
+			data.put("useList", this.useList);
 
 			final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtility.firstLetterUpperCase(this.name) + "JacksonMapper.java");
 			final Writer out = new OutputStreamWriter(fos);
@@ -159,6 +189,7 @@ public class JsonConvertor {
 				component.setNodes(object.getFields());
 				data.put("comp", component);
 				data.put("deserialisers", subPath);
+				data.put("useList", this.useList);
 
 				final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtility.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
 				final Writer out = new OutputStreamWriter(fos);

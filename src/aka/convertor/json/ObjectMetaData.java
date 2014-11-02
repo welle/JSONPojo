@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class ObjectMetaData {
 
 	@NonNull
-	private String objectName;
-	@NonNull
 	private String javaObjectName;
 	@NonNull
 	public final Map<@NonNull String, @NonNull FieldMetaData> objects = new HashMap<>();
@@ -35,7 +33,6 @@ public class ObjectMetaData {
 	 * @param jsonMetaData
 	 */
 	public ObjectMetaData(@NonNull final String objectName, @NonNull final JsonNode rootObject, @NonNull final JsonMetaData jsonMetaData) {
-		this.objectName = objectName;
 		this.javaObjectName = StringUtility.getVariableName(objectName);
 
 		if (rootObject.isArray()) {
@@ -113,7 +110,6 @@ public class ObjectMetaData {
 	}
 
 	public void changeName(@NonNull final String newName) {
-		this.objectName = newName;
 		this.javaObjectName = StringUtility.getVariableName(newName);
 	}
 

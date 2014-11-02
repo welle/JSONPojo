@@ -1,6 +1,13 @@
 package ${package};
 
 import java.io.IOException;
+<#if isRootAnArray>
+	<#if useList>
+import java.util.ArrayList;	
+import java.util.Arrays;
+import java.util.List;		
+	</#if>
+</#if>
 
 <#if comp.getAnnotations() == "eclipse">
 import org.eclipse.jdt.annotation.NonNull;
@@ -35,20 +42,46 @@ public final class ${comp.getName()}JacksonMapper {
 	 *             when non-well-formed content (content that does not conform
 	 *             to JSON syntax as per specification) is encountered.
      */
-	<#if comp.getAnnotations() == "eclipse">
+	<#if isRootAnArray>
+		<#if useList>
+			<#if comp.getAnnotations() == "eclipse">
+	@NonNull
+			<#elseif comp.getAnnotations() == "jsr">
+	@Nonnull
+			</#if>
+		<#else>
+			<#if comp.getAnnotations() == "eclipse">
     @Nullable
-	<#elseif comp.getAnnotations() == "jsr">
+			<#elseif comp.getAnnotations() == "jsr">
 	@Nullable
+			</#if>
+		</#if>
+	<#else>
+		<#if comp.getAnnotations() == "eclipse">
+	@Nullable
+		<#elseif comp.getAnnotations() == "jsr">
+	@Nullable
+		</#if>
 	</#if>
-    public static ${comp.getName()} readValue(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final String jsonString) throws JsonParseException, IOException {
-        ${comp.getName()} result = null;
+    public static <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()}[]</#if><#else>${comp.getName()}</#if> readValue(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final String jsonString) throws JsonParseException, IOException {
+        <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()}{}</#if><#else>${comp.getName()}</#if> result = <#if isRootAnArray><#if useList>new ArrayList<>();<#else>[];</#if><#else>null</#if>
         
         if (jsonString.trim().length() > 0) {
             final ObjectMapper objectMapper = new ObjectMapper();
             final JsonFactory jsonFactory = new JsonFactory();
             
             final JsonParser jp = jsonFactory.createJsonParser(jsonString);
-            result = objectMapper.readValue(jp, ${comp.getName()}.class);
+            <#if isRootAnArray>
+				<#if useList>
+			${comp.getName()}[] temp = objectMapper.readValue(jp, ${comp.getName()}[].class);
+			result = Arrays.asList(temp);
+			assert result != null;
+				<#else>
+			result = objectMapper.readValue(jp, ${comp.getName()}[].class);
+				</#if>
+			<#else>
+            result = objectMapper.readValue(jp, ${comp.getName()}<#if isRootAnArray>[]</#if>.class);
+			</#if>
         }
         
         return result;
@@ -68,7 +101,7 @@ public final class ${comp.getName()}JacksonMapper {
 	<#elseif comp.getAnnotations() == "jsr">
 	@Nullable
 	</#if>
-    public static String writeValue(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final ${comp.getName()} object) throws IOException {
+    public static String writeValue(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()}[]</#if><#else>${comp.getName()}</#if> object) throws IOException {
         final ObjectMapper objectMapper = new ObjectMapper();
 
         return objectMapper.writeValueAsString(object);

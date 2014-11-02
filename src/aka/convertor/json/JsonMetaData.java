@@ -23,16 +23,18 @@ public class JsonMetaData {
 
 	private final Map<@NonNull String, @Nullable ObjectMetaData> objects = new HashMap<>();
 	private final Map<@NonNull String, @Nullable Deserialiser> deserialiseList = new HashMap<>();
+	private boolean isRootAnArray;
 
 	/**
 	 * @param name
 	 * @param jsonToParse
 	 */
 	public JsonMetaData(@NonNull final String name, @NonNull final String jsonToParse) {
-
 		try {
 			final ObjectMapper mapper = new ObjectMapper();
 			final JsonNode rootNode = mapper.readTree(jsonToParse);
+
+			this.isRootAnArray = rootNode.isArray();
 			assert rootNode != null;
 			// multiple children
 			final ObjectMetaData tmd = new ObjectMetaData(name, rootNode, this);
@@ -99,5 +101,9 @@ public class JsonMetaData {
 
 		final DeserialiseItem item = new DeserialiseItem(name, pattern);
 		deserialiser.addDeserialiseItem(name, item);
+	}
+
+	public boolean isRootAnArray() {
+		return this.isRootAnArray;
 	}
 }

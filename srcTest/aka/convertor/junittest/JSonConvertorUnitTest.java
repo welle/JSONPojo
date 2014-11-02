@@ -79,7 +79,7 @@ public class JSonConvertorUnitTest {
 		try {
 			final String jsonToParse = new String(Files.readAllBytes(Paths.get("./srcTest/txt/examples/example5.txt")));
 			final JsonConvertor jsonConvertor = new JsonConvertor("aka.convertor.examples.example5", "Example5", jsonToParse, this.path);
-			jsonConvertor.generateAll(Generator.JACKSON, "deserializers", "Welle", AnnotationType.ECLIPSE);
+			jsonConvertor.generateAll(Generator.JACKSON, "deserializers", "Welle", AnnotationType.ECLIPSE, false);
 		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
