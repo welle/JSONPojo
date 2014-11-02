@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * This is a generated file.
  *
  * @author Welle
- */
+ */ 
 public final class Example1JacksonMapper {
 
     /**

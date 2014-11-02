@@ -3,11 +3,12 @@ package ${package};
 import com.google.gson.Gson;
 
 /**
- * This is a generated file and should not be modified.
+ * This is a generated file.
+<#if comp.getAuthor()??>
  *
- * @author JetTools
- *
- */
+ * @author ${comp.getAuthor()}
+</#if>
+ */ 
 public final class ${comp.Root}GsonMapper {
 
     final static Logger logger;

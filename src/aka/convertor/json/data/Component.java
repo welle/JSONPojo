@@ -4,36 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import aka.convertor.json.FieldMetaData;
 import aka.convertor.json.constants.AnnotationType;
 
-import com.sun.istack.internal.Nullable;
-
 public class Component {
 
-	private String name;
-	private ArrayList<FieldMetaData> fields;
-	private String author;
 	@NonNull
-	private final AnnotationType annotation;
+	private final String name;
+	private ArrayList<FieldMetaData> fields;
+	private final String author;
+	@NonNull
+	private AnnotationType annotation = AnnotationType.NONE;
 
-	public Component(@NonNull AnnotationType annotationType) {
+	public Component(@NonNull final String name, @Nullable final String author) {
+		this.name = name;
+		this.author = author;
+	}
+
+	public Component(@NonNull final String name, @NonNull final AnnotationType annotationType, @Nullable final String author) {
+		this(name, author);
 		this.annotation = annotationType;
 	}
 
+	@NonNull
 	public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setNodes(ArrayList<FieldMetaData> fields) {
+	public void setNodes(@NonNull final ArrayList<@NonNull FieldMetaData> fields) {
 		this.fields = fields;
 	}
 
+	@Nullable
 	public List<FieldMetaData> getNodes() {
 		return this.fields;
 	}
@@ -60,10 +64,6 @@ public class Component {
 			}
 		}
 		return result;
-	}
-
-	public void setAuthor(@Nullable String author) {
-		this.author = author;
 	}
 
 	@Nullable

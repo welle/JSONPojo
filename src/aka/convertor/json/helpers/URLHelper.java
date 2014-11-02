@@ -10,12 +10,6 @@ import org.eclipse.jdt.annotation.NonNull;
 public class URLHelper {
 
 	public static boolean isURL(@NonNull String urlStr) {
-		// try {
-		// final URI uri = new URI(uriStr);
-		// return true;
-		// } catch (final URISyntaxException e) {
-		// return false;
-		// }
 		try {
 			URL url = new URL(urlStr);
 			final URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());

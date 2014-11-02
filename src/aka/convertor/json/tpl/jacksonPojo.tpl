@@ -61,8 +61,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * This is a generated file.
- *
 <#if comp.getAuthor()??>
+ *
  * @author ${comp.getAuthor()}
 </#if>
  */ 

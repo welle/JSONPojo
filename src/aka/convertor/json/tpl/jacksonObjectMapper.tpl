@@ -17,11 +17,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This is a generated file.
- *
 <#if comp.getAuthor()??>
+ *
  * @author ${comp.getAuthor()}
 </#if>
- */
+ */ 
 public final class ${comp.getName()}JacksonMapper {
 
     /**

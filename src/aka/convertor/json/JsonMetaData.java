@@ -8,42 +8,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Charlotte
- * 
+ *
  */
 public class JsonMetaData {
 
-	private String packageName = null;
-	private String projectName = null;
-	private final Map<String, ObjectMetaData> objects = new HashMap<String, ObjectMetaData>();
-	private String root;
-	private final Map<String, Deserialiser> deserialiseList = new HashMap<String, Deserialiser>();
+	private final Map<@NonNull String, @Nullable ObjectMetaData> objects = new HashMap<>();
+	private final Map<@NonNull String, @Nullable Deserialiser> deserialiseList = new HashMap<>();
 
 	/**
 	 * @param name
-	 * @param projectName
-	 * @param dbFormat
 	 * @param jsonToParse
 	 */
-	public JsonMetaData(final String name, final String projectName, final String dbFormat, final String jsonToParse) {
-		this.packageName = name;
-		this.projectName = projectName;
+	public JsonMetaData(@NonNull final String name, @NonNull final String jsonToParse) {
 
 		try {
 			final ObjectMapper mapper = new ObjectMapper();
 			final JsonNode rootNode = mapper.readTree(jsonToParse);
+			assert rootNode != null;
 			// multiple children
-			final ObjectMetaData tmd = new ObjectMetaData(name, dbFormat, rootNode, this);
+			final ObjectMetaData tmd = new ObjectMetaData(name, rootNode, this);
 			this.objects.put(name, tmd);
-			this.root = name;
 
-			final Map<String, FieldMetaData> objectsList = tmd.getObjects();
-			getAllObject(objectsList, dbFormat);
+			final Map<@NonNull String, @NonNull FieldMetaData> objectsList = tmd.getObjects();
+			getAllObject(objectsList);
 		} catch (final JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,63 +49,48 @@ public class JsonMetaData {
 		}
 	}
 
-	private void getAllObject(final Map<String, FieldMetaData> objectsList, final String dbFormat) {
-		for (final Entry<String, FieldMetaData> entry : objectsList.entrySet()) {
+	private void getAllObject(@NonNull final Map<@NonNull String, @NonNull FieldMetaData> objectsList) {
+		for (final Entry<@NonNull String, @NonNull FieldMetaData> entry : objectsList.entrySet()) {
 			String name = entry.getKey();
 			final FieldMetaData fieldMetaData = entry.getValue();
 			final ObjectMetaData object = fieldMetaData.getObject();
-			final ObjectMetaData parentObject = fieldMetaData.getParentObject();
-			if (this.objects.containsKey(name)) {
-				// change name
-				int i = 1;
-				while (this.objects.containsKey(name + i)) {
-					i++;
+			if (object != null) {
+				final ObjectMetaData parentObject = fieldMetaData.getParentObject();
+				if (this.objects.containsKey(name)) {
+					// change name
+					int i = 1;
+					while (this.objects.containsKey(name + i)) {
+						i++;
+					}
+					final String newName = name + i;
+
+					fieldMetaData.setFieldName(newName);
+					object.changeName(newName);
+					this.objects.put(newName, object);
+					parentObject.changeField(name, newName, fieldMetaData);
+
+					name = newName;
 				}
-				final String newName = name + i;
-
-				fieldMetaData.setFieldName(newName);
-				object.changeName(newName, dbFormat);
-				this.objects.put(newName, object);
-				parentObject.changeField(name, newName, fieldMetaData);
-
-				name = newName;
+				this.objects.put(name, object);
+				getAllObject(object.objects);
 			}
-			this.objects.put(name, object);
-			getAllObject(object.objects, dbFormat);
 		}
-
 	}
 
 	/**
 	 * @return ArrayList<TableMetaData>
 	 */
-	public ArrayList<ObjectMetaData> getObjects() {
+	@NonNull
+	public ArrayList<@NonNull ObjectMetaData> getObjects() {
 		return new ArrayList(Arrays.asList(this.objects.values().toArray()));
 	}
 
-	/**
-	 * @return String
-	 */
-	public String getPackageName() {
-		return this.packageName;
-	}
-
-	/**
-	 * @return String
-	 */
-	public String getProjectName() {
-		return this.projectName;
-	}
-
-	public String getRoot() {
-		return this.root;
-	}
-
-	public List<Deserialiser> getDeserialises() {
+	@NonNull
+	public List<@NonNull Deserialiser> getDeserialisers() {
 		return new ArrayList(Arrays.asList(this.deserialiseList.values().toArray()));
 	}
 
-	public void addDeserialiser(final String type, final String name, final String pattern) {
+	public void addDeserialiser(@NonNull final String type, @NonNull final String name, @Nullable final String pattern) {
 		Deserialiser deserialiser = this.deserialiseList.get(type);
 		if (deserialiser == null) {
 			deserialiser = new Deserialiser(type);
@@ -119,5 +100,4 @@ public class JsonMetaData {
 		final DeserialiseItem item = new DeserialiseItem(name, pattern);
 		deserialiser.addDeserialiseItem(name, item);
 	}
-
 }

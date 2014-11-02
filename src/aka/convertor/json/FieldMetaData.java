@@ -4,49 +4,52 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import aka.convertor.json.helpers.DateHelper;
-import aka.convertor.json.helpers.StringParser;
 import aka.convertor.json.helpers.StringUtility;
 import aka.convertor.json.helpers.URLHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-/**
- * see DatabaseMetaData.html#getColumns(java.lang.String,%20java.lang.String,%20
- * java.lang.String,%20java.lang.String) for details on the available metadata
- *
- * @author daniel
- *
- */
 public class FieldMetaData {
 
 	private final int size;
 	private final int decimals;
-
+	@NonNull
 	private String localName;
+	@NonNull
 	private String paramName;
+	@NonNull
 	private final String serialisableName;
+	@NonNull
 	private String javaType;
+	@NonNull
 	private String JavaSubType;
+	@NonNull
 	private final JsonMetaData jsonMetaData;
 	private String deserName;
-	private ObjectMetaData parentObject = null;
-	private ObjectMetaData object = null;
+	@NonNull
+	private final ObjectMetaData parentObject;
+	@Nullable
+	private ObjectMetaData object;
 	private boolean isObject = false;
 
 	/**
 	 * @param fieldName
 	 * @param serName
-	 * @param dbFormat
 	 * @param jsonNode
 	 * @param jsonMetaData
 	 * @param parentObject
 	 */
-	public FieldMetaData(final String fieldName, final String serName, final String dbFormat, final JsonNode jsonNode, final JsonMetaData jsonMetaData, final ObjectMetaData parentObject) {
+	public FieldMetaData(@NonNull final String fieldName, @NonNull final String serName, @NonNull final JsonNode jsonNode, @NonNull final JsonMetaData jsonMetaData,
+	        @NonNull final ObjectMetaData parentObject) {
 		this.jsonMetaData = jsonMetaData;
-		this.localName = StringParser.getLocalName(fieldName);
-		this.paramName = StringParser.getLocalName(fieldName);
+		this.localName = StringUtility.getLocalName(fieldName);
+		this.paramName = StringUtility.getLocalName(fieldName);
 		this.serialisableName = serName;
 		this.deserName = "";
 		this.parentObject = parentObject;
@@ -55,7 +58,9 @@ public class FieldMetaData {
 
 		if (isArray) {
 			// this is a list
-			this.javaType = "List";
+			final String temp = List.class.getSimpleName();
+			assert temp != null;
+			this.javaType = temp;
 			this.JavaSubType = StringUtility.firstLetterUpperCase(this.localName);
 		} else {
 			this.javaType = StringUtility.firstLetterUpperCase(this.localName);
@@ -69,7 +74,7 @@ public class FieldMetaData {
 			this.size = 0;
 			this.decimals = 0;
 			this.isObject = true;
-			this.object = new ObjectMetaData(this.localName, dbFormat, jsonNode, jsonMetaData);
+			this.object = new ObjectMetaData(this.localName, jsonNode, jsonMetaData);
 		} else {
 			// field is a simple object (date, string, etc)
 			this.size = 0;
@@ -79,7 +84,7 @@ public class FieldMetaData {
 		}
 	}
 
-	private <T> void setJavaType(final JsonNode jsonNode, final boolean isArray) {
+	private <T> void setJavaType(@NonNull final JsonNode jsonNode, final boolean isArray) {
 		if (jsonNode.isBigDecimal()) {
 			setType(BigDecimal.class, isArray);
 		} else if (jsonNode.isBigInteger()) {
@@ -109,6 +114,7 @@ public class FieldMetaData {
 				final String dateName = DateHelper.parseDate(value);
 				if (dateName == null) {
 					final boolean isURL = URLHelper.isURL(value);
+					// check if this is an url string
 					if (isURL) {
 						setType(URI.class, isArray);
 						// add deserialiser
@@ -125,25 +131,24 @@ public class FieldMetaData {
 					this.deserName = dateName;
 				}
 			}
-
-			// check if this is an url string
 		}
-
 	}
 
-	private <T> void setType(final Class<T> className, final boolean isArray) {
+	private <T> void setType(@NonNull final Class<T> className, final boolean isArray) {
 		try {
 			final String type = className.getSimpleName();
-
+			assert type != null;
 			if (isArray) {
 				// this is a list
-				this.javaType = "List";
+				final String temp = List.class.getSimpleName();
+				assert temp != null;
+				this.javaType = temp;
 				this.JavaSubType = type;
 			} else {
 				this.javaType = type;
 			}
 		} catch (final Exception e) {
-			System.err.println("[FieldMetaData] FieldMetaData - Error processing column [" + this.localName + "] in field [" + this.localName + "] :: " + e.getMessage());
+			//
 		}
 	}
 
@@ -157,6 +162,7 @@ public class FieldMetaData {
 	/**
 	 * @return String
 	 */
+	@NonNull
 	public String getJavaType() {
 		return this.javaType;
 	}
@@ -164,6 +170,7 @@ public class FieldMetaData {
 	/**
 	 * @return String
 	 */
+	@Nullable
 	public String getJavaSubType() {
 		return this.JavaSubType;
 	}
@@ -171,6 +178,7 @@ public class FieldMetaData {
 	/**
 	 * @return String
 	 */
+	@NonNull
 	public String getLocalName() {
 		return this.localName;
 	}
@@ -178,6 +186,7 @@ public class FieldMetaData {
 	/**
 	 * @return String
 	 */
+	@NonNull
 	public String getParamName() {
 		return this.paramName;
 	}
@@ -192,6 +201,7 @@ public class FieldMetaData {
 	/**
 	 * @return String
 	 */
+	@Nullable
 	public String getDeserName() {
 		return this.deserName;
 	}
@@ -203,11 +213,11 @@ public class FieldMetaData {
 		return this.size;
 	}
 
-	public void setFieldName(final String newName) {
-		this.localName = StringParser.getLocalName(newName);
-		this.paramName = StringParser.getLocalName(newName);
+	public void setFieldName(@NonNull final String newName) {
+		this.localName = StringUtility.getLocalName(newName);
+		this.paramName = StringUtility.getLocalName(newName);
 
-		if ("List".equals(this.javaType)) {
+		if (List.class.getSimpleName().equals(this.javaType)) {
 			// this is a list
 			this.JavaSubType = StringUtility.firstLetterUpperCase(this.localName);
 		} else {
@@ -219,18 +229,21 @@ public class FieldMetaData {
 		return this.isObject;
 	}
 
+	@NonNull
 	public ObjectMetaData getParentObject() {
 		return this.parentObject;
 	}
 
+	@Nullable
 	public ObjectMetaData getObject() {
 		return this.object;
 	}
 
 	public boolean isAList() {
-		return "List".equals(this.javaType);
+		return List.class.getSimpleName().equals(this.javaType);
 	}
 
+	@NonNull
 	public JsonMetaData getJsonMetaData() {
 		return this.jsonMetaData;
 	}

@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Helper to check if string can be a date
  *
@@ -17,9 +20,10 @@ import java.util.TimeZone;
 public class DateHelper {
 
 	private static TimeZone TIMEZONES[] = { TimeZone.getTimeZone("UTC"), TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getTimeZone("PST"), TimeZone.getTimeZone("Europe/Warsaw"),
-	        TimeZone.getTimeZone("CET"), };
+		TimeZone.getTimeZone("CET"), };
 
-	public static Map<String, String> dateNameFormatMap = new HashMap<>();
+	@NonNull
+	public static Map<@NonNull String, @NonNull String> dateNameFormatMap = new HashMap<>();
 	static {
 		dateNameFormatMap.put("DateYearMonthDaySlash", "yyyy/MM/dd");
 		dateNameFormatMap.put("DateYearMonthDayDash", "yyyy-MM-dd");
@@ -53,8 +57,9 @@ public class DateHelper {
 	 *            String to parse
 	 * @return format of date, null if not exist
 	 */
-	public static String parseDate(final String value) {
-		for (final Entry<String, String> entry : dateNameFormatMap.entrySet()) {
+	@Nullable
+	public static String parseDate(@NonNull final String value) {
+		for (final Entry<@NonNull String, @NonNull String> entry : dateNameFormatMap.entrySet()) {
 			final String pattern = entry.getValue();
 			final String name = entry.getKey();
 			final boolean d = parseWithPatterns(value, pattern);
@@ -65,7 +70,7 @@ public class DateHelper {
 		return null;
 	}
 
-	private static boolean parseWithPatterns(final String s, final String pattern) {
+	private static boolean parseWithPatterns(@NonNull final String s, @NonNull final String pattern) {
 		try {
 			final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
 			final Date date = sdf.parse(s);
