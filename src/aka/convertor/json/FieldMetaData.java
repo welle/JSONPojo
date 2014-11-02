@@ -46,7 +46,7 @@ public class FieldMetaData {
 	 * @param parentObject
 	 */
 	public FieldMetaData(@NonNull final String fieldName, @NonNull final String serName, @NonNull final JsonNode jsonNode, @NonNull final JsonMetaData jsonMetaData,
-	        @NonNull final ObjectMetaData parentObject) {
+			@NonNull final ObjectMetaData parentObject) {
 		this.jsonMetaData = jsonMetaData;
 		this.localName = StringUtility.getLocalName(fieldName);
 		this.paramName = StringUtility.getLocalName(fieldName);
@@ -105,6 +105,8 @@ public class FieldMetaData {
 			setType(Long.class, isArray);
 		} else if (jsonNode.isNumber()) {
 			setType(Number.class, isArray);
+		} else if (jsonNode.isBoolean()) {
+			setType(Boolean.class, isArray);
 		} else {
 			// check if this is a date
 			final String value = jsonNode.textValue();
