@@ -49,12 +49,6 @@ public final class ${comp.getName()}JacksonMapper {
 			<#elseif comp.getAnnotations() == "jsr">
 	@Nonnull
 			</#if>
-		<#else>
-			<#if comp.getAnnotations() == "eclipse">
-    @Nullable
-			<#elseif comp.getAnnotations() == "jsr">
-	@Nullable
-			</#if>
 		</#if>
 	<#else>
 		<#if comp.getAnnotations() == "eclipse">
@@ -63,8 +57,8 @@ public final class ${comp.getName()}JacksonMapper {
 	@Nullable
 		</#if>
 	</#if>
-    public static <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()}[]</#if><#else>${comp.getName()}</#if> readValue(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final String jsonString) throws JsonParseException, IOException {
-        <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()}{}</#if><#else>${comp.getName()}</#if> result = <#if isRootAnArray><#if useList>new ArrayList<>();<#else>[];</#if><#else>null</#if>
+    public static <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()} <#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> []</#if><#else>${comp.getName()}</#if> readValue(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final String jsonString) throws JsonParseException, IOException {
+        <#if isRootAnArray><#if useList>List<${comp.getName()}><#else>${comp.getName()} <#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> []</#if><#else>${comp.getName()}</#if> result = <#if isRootAnArray><#if useList>new ArrayList<>()<#else>null</#if><#else>null</#if>;
         
         if (jsonString.trim().length() > 0) {
             final ObjectMapper objectMapper = new ObjectMapper();
