@@ -1,0 +1,29 @@
+[{
+    "score": 8.750235,
+    "popularity": 3,
+    "translated": true,
+    "adult": false,
+    "language": "en",
+    "name": "The Hitchhiker's Guide to the Galaxy",
+    "alternative_name": "The Hitchhikers Guide to the Galaxy",
+    "movie_type": "movie",
+    "id": 7453,
+    "imdb_id": "tt0371724",
+    "url": "http://www.themoviedb.org/movie/7453",
+    "rating": 6.8,
+    "certification": "PG",
+    "overview": "Mere seconds before the Earth is to be demolished by an alien construction crew, Arthur Dent is swept off the planet by his friend Ford Prefect, a researcher penning a new edition of \"The Hitchhiker's Guide to the Galaxy.\"",
+    "released": "2005-04-20",
+    "posters": [{
+        "image": {
+            "type": "poster",
+            "size": "original",
+            "height": 1000,
+            "width": 675,
+            "url": "http://hwcdn.themoviedb.org/posters/16e/4bcc96cd017a3c0f2600016e/the-hitchhiker-s-guide-to-the-galaxy-original.jpg",
+            "id": "4bcc96cd017a3c0f2600016e"
+        }
+    }],
+    "version": 22,
+    "last_modified_at": "2010-07-19 22:59:02"
+}]

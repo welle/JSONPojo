@@ -1,4 +1,4 @@
-package aka.convertor.json;
+package aka.convertor.json.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import aka.convertor.json.JsonMetaData;
 import aka.convertor.json.helpers.StringUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;

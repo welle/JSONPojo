@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import aka.convertor.json.constants.AnnotationType;
 import aka.convertor.json.constants.Generator;
 import aka.convertor.json.data.Component;
-import aka.convertor.json.helpers.StringUtility;
+import aka.convertor.json.helpers.StringUtilities;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -140,7 +140,7 @@ public class JsonConvertor {
 						data.put("comp", component);
 						data.put("deserialiser", deserialiseItem);
 
-						final FileOutputStream fos = new FileOutputStream(filePath + StringUtility.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
+						final FileOutputStream fos = new FileOutputStream(filePath + StringUtilities.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
 						final Writer out = new OutputStreamWriter(fos);
 						template.process(data, out);
 						out.flush();
@@ -166,7 +166,7 @@ public class JsonConvertor {
 			data.put("isRootAnArray", this.jsonMetaData.isRootAnArray());
 			data.put("useList", this.useList);
 
-			final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtility.firstLetterUpperCase(this.name) + "JacksonMapper.java");
+			final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
 			final Writer out = new OutputStreamWriter(fos);
 			templateMapper.process(data, out);
 			out.flush();
@@ -191,7 +191,7 @@ public class JsonConvertor {
 				data.put("deserialisers", subPath);
 				data.put("useList", this.useList);
 
-				final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtility.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
+				final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
 				final Writer out = new OutputStreamWriter(fos);
 				template.process(data, out);
 				out.flush();

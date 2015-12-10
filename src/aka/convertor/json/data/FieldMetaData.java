@@ -1,4 +1,4 @@
-package aka.convertor.json;
+package aka.convertor.json.data;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import aka.convertor.json.JsonMetaData;
 import aka.convertor.json.helpers.DateHelper;
 import aka.convertor.json.helpers.StringUtilities;
 import aka.convertor.json.helpers.URLHelper;
@@ -46,7 +47,7 @@ public class FieldMetaData {
 	 * @param parentObject
 	 */
 	public FieldMetaData(@NonNull final String fieldName, @NonNull final String serName, @NonNull final JsonNode jsonNode, @NonNull final JsonMetaData jsonMetaData,
-			@NonNull final ObjectMetaData parentObject) {
+	        @NonNull final ObjectMetaData parentObject) {
 		this.jsonMetaData = jsonMetaData;
 		this.localName = StringUtilities.getLocalName(fieldName);
 		this.paramName = StringUtilities.getLocalName(fieldName);

@@ -3,12 +3,18 @@ package aka.convertor.json.constants;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * Enumeration of generators.
+ * 
+ * @author Welle Charlotte
+ */
 public enum Generator {
 
 	/**
 	 * GSON generator.
 	 */
 	GSON("gsonPojo.tpl", "gsonObjectMapper.tpl", null, null),
+	
 	/**
 	 * Jackson generator.
 	 */
@@ -31,7 +37,7 @@ public enum Generator {
 	}
 
 	/**
-	 * Get POJO Tpl.
+	 * Get POJO template.
 	 *
 	 * @return the pojoTpl
 	 */
@@ -41,7 +47,7 @@ public enum Generator {
 	}
 
 	/**
-	 * Get object mapper Tpl.
+	 * Get object mapper template.
 	 *
 	 * @return the objectMapperTpl
 	 */
@@ -51,7 +57,7 @@ public enum Generator {
 	}
 
 	/**
-	 * Get Date deserialiser Tpl.
+	 * Get Date deserialiser template.
 	 *
 	 * @return the deserialiserDateTpl
 	 */
@@ -61,7 +67,7 @@ public enum Generator {
 	}
 
 	/**
-	 * Get URL deserialiser Tpl.
+	 * Get URL deserialiser template.
 	 *
 	 * @return the deserialiserURLTpl
 	 */
