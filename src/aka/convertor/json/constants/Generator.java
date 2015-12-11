@@ -5,74 +5,74 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Enumeration of generators.
- * 
+ *
  * @author Welle Charlotte
  */
 public enum Generator {
 
-	/**
-	 * GSON generator.
-	 */
-	GSON("gsonPojo.tpl", "gsonObjectMapper.tpl", null, null),
-	
-	/**
-	 * Jackson generator.
-	 */
-	JACKSON("jacksonPojo.tpl", "jacksonObjectMapper.tpl", "jacksonDateDeserialiser.tpl", "jacksonURLDeserialiser.tpl");
+    /**
+     * GSON generator.
+     */
+    GSON("gsonPojo.tpl", "gsonObjectMapper.tpl", null, null),
 
-	@NonNull
-	private String pojoTpl;
-	@NonNull
-	private String objectMapperTpl;
-	@Nullable
-	private String deserialiserDateTpl;
-	@Nullable
-	private String deserialiserURLTpl;
+    /**
+     * Jackson generator.
+     */
+    JACKSON("jacksonPojo.tpl", "jacksonObjectMapper.tpl", "jacksonDateDeserialiser.tpl", "jacksonURLDeserialiser.tpl");
 
-	private Generator(@NonNull final String pojoTpl, @NonNull final String objectMapperTpl, @Nullable final String deserialiserDateTpl, @Nullable final String deserialiserURLTpl) {
-		this.pojoTpl = pojoTpl;
-		this.objectMapperTpl = objectMapperTpl;
-		this.deserialiserDateTpl = deserialiserDateTpl;
-		this.deserialiserURLTpl = deserialiserURLTpl;
-	}
+    @NonNull
+    private String pojoTpl;
+    @NonNull
+    private String objectMapperTpl;
+    @Nullable
+    private String deserialiserDateTpl;
+    @Nullable
+    private String deserialiserURLTpl;
 
-	/**
-	 * Get POJO template.
-	 *
-	 * @return the pojoTpl
-	 */
-	@NonNull
-	public String getPojoTpl() {
-		return this.pojoTpl;
-	}
+    private Generator(@NonNull final String pojoTpl, @NonNull final String objectMapperTpl, @Nullable final String deserialiserDateTpl, @Nullable final String deserialiserURLTpl) {
+        this.pojoTpl = pojoTpl;
+        this.objectMapperTpl = objectMapperTpl;
+        this.deserialiserDateTpl = deserialiserDateTpl;
+        this.deserialiserURLTpl = deserialiserURLTpl;
+    }
 
-	/**
-	 * Get object mapper template.
-	 *
-	 * @return the objectMapperTpl
-	 */
-	@NonNull
-	public String getObjectMapperTpl() {
-		return this.objectMapperTpl;
-	}
+    /**
+     * Get POJO template.
+     *
+     * @return the pojoTpl
+     */
+    @NonNull
+    public String getPojoTpl() {
+        return this.pojoTpl;
+    }
 
-	/**
-	 * Get Date deserialiser template.
-	 *
-	 * @return the deserialiserDateTpl
-	 */
-	@Nullable
-	public String getDeserialiserDateTpl() {
-		return this.deserialiserDateTpl;
-	}
+    /**
+     * Get object mapper template.
+     *
+     * @return the objectMapperTpl
+     */
+    @NonNull
+    public String getObjectMapperTpl() {
+        return this.objectMapperTpl;
+    }
 
-	/**
-	 * Get URL deserialiser template.
-	 *
-	 * @return the deserialiserURLTpl
-	 */
-	@Nullable
-	public String getDeserialiserURLTpl() {
-		return this.deserialiserURLTpl;
-	}
+    /**
+     * Get Date deserialiser template.
+     *
+     * @return the deserialiserDateTpl
+     */
+    @Nullable
+    public String getDeserialiserDateTpl() {
+        return this.deserialiserDateTpl;
+    }
+
+    /**
+     * Get URL deserialiser template.
+     *
+     * @return the deserialiserURLTpl
+     */
+    @Nullable
+    public String getDeserialiserURLTpl() {
+        return this.deserialiserURLTpl;
+    }
 }

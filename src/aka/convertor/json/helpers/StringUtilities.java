@@ -46,17 +46,19 @@ public final class StringUtilities {
         } else {
             final String[] array = result.split("_");
 
-            final StringBuilder sb = new StringBuilder();
-            sb.append(StringUtilities.firstLetterLowerCase(array[0]));
+            if (array != null && array.length > 0) {
+                final StringBuilder sb = new StringBuilder();
+                final String first = array[0];
+                assert first != null : "It should not be possible.";
+                sb.append(StringUtilities.firstLetterLowerCase(first));
 
-            for (int i = 1; i < array.length; i++) {
-                final String current = array[i];
-                assert current != null;
-                sb.append(StringUtilities.firstLetterUpperCase(current));
+                for (int i = 1; i < array.length; i++) {
+                    final String current = array[i];
+                    assert current != null;
+                    sb.append(StringUtilities.firstLetterUpperCase(current));
+                }
+                result = sb.toString();
             }
-
-            result = sb.toString();
-            assert result != null;
         }
 
         if (StringUtilities.isNumber(result)) {
@@ -65,7 +67,6 @@ public final class StringUtilities {
 
         if (ReservedWord.RESERVED_WORDS.contains(result.toLowerCase())) {
             result = result.concat("Res");
-            assert result != null;
         }
 
         return result;
@@ -97,7 +98,7 @@ public final class StringUtilities {
      * @return String
      */
     @NonNull
-    static public String firstLetterLowerCase(final String arg) {
+    static public String firstLetterLowerCase(@NonNull final String arg) {
         String pre = arg.substring(0, 1);
         pre = pre.toLowerCase();
 
