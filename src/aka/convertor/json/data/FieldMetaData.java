@@ -2,7 +2,9 @@ package aka.convertor.json.data;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
@@ -115,20 +117,24 @@ public class FieldMetaData {
             } else {
                 final String dateName = DateHelper.parseDate(value);
                 if (dateName == null) {
-                    final boolean isURL = URLHelper.isURL(value);
-                    // check if this is an url string
-                    if (isURL) {
-                        setType(URI.class, isArray);
-                        // add deserialiser
-                        this.jsonMetaData.addDeserialiser("URL", "URL", null);
-                        this.deserName = "URL";
-                    } else {
-                        setType(String.class, isArray);
+                    try {
+                        final boolean isURL = URLHelper.isURL(value);
+                        // check if this is an url string
+                        if (isURL) {
+                            setType(URI.class, isArray);
+                            // add deserialiser
+                            this.jsonMetaData.addDeserialiser("URL", "URL", null);
+                            this.deserName = "URL";
+                        } else {
+                            setType(String.class, isArray);
+                        }
+                    } catch (final MalformedURLException e) {
+                    } catch (final URISyntaxException e) {
                     }
                 } else {
                     setType(Date.class, isArray);
                     // add deserialiser
-                    final String pattern = DateHelper.dateNameFormatMap.get(dateName);
+                    final String pattern = DateHelper.DATENAMEFORMATMAP.get(dateName);
                     this.jsonMetaData.addDeserialiser("Date", dateName, pattern);
                     this.deserName = dateName;
                 }
@@ -137,18 +143,14 @@ public class FieldMetaData {
     }
 
     private <T> void setType(@NonNull final Class<T> className, final boolean isArray) {
-        try {
-            final String type = className.getSimpleName();
-            if (isArray) {
-                // this is a list
-                final String temp = List.class.getSimpleName();
-                this.javaType = temp;
-                this.JavaSubType = type;
-            } else {
-                this.javaType = type;
-            }
-        } catch (final Exception e) {
-            //
+        final String type = className.getSimpleName();
+        if (isArray) {
+            // this is a list
+            final String temp = List.class.getSimpleName();
+            this.javaType = temp;
+            this.JavaSubType = type;
+        } else {
+            this.javaType = type;
         }
     }
 

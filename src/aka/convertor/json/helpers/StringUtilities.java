@@ -19,8 +19,7 @@ public final class StringUtilities {
      */
     @NonNull
     public static String getVariableName(@NonNull final String fieldName) {
-        final String dbName2 = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-        return dbName2;
+        return firstLetterLowerCase(fieldName);
     }
 
     /**
@@ -75,33 +74,46 @@ public final class StringUtilities {
     private static boolean isNumber(@NonNull final String string) {
         try {
             Long.parseLong(string);
-        } catch (final Exception e) {
+        } catch (@SuppressWarnings("unused") final Exception e) {
             return false;
         }
         return true;
     }
 
     /**
-     * @param arg
-     * @return String
+     * Convert first letter of the given string to upper case.
+     *
+     * @param string
+     * @return String with first letter to upper case
      */
     @NonNull
-    static public String firstLetterUpperCase(@NonNull final String arg) {
-        String pre = arg.substring(0, 1);
-        pre = pre.toUpperCase();
+    static public String firstLetterUpperCase(@NonNull final String string) {
+        String result = string;
+        if (string.length() > 0) {
+            String pre = string.substring(0, 1);
+            pre = pre.toUpperCase();
 
-        return pre + arg.substring(1);
+            result = pre + string.substring(1);
+        }
+
+        return result;
     }
 
     /**
-     * @param arg
-     * @return String
+     * Convert first letter of the given string to lower case.
+     *
+     * @param string
+     * @return String with first letter to lower case
      */
     @NonNull
-    static public String firstLetterLowerCase(@NonNull final String arg) {
-        String pre = arg.substring(0, 1);
-        pre = pre.toLowerCase();
+    static public String firstLetterLowerCase(@NonNull final String string) {
+        String result = string;
+        if (string.length() > 0) {
+            String pre = string.substring(0, 1);
+            pre = pre.toLowerCase();
+            result = pre + string.substring(1);
+        }
 
-        return pre + arg.substring(1);
+        return result;
     }
 }

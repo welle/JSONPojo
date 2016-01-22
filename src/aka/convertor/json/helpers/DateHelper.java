@@ -15,38 +15,40 @@ import org.eclipse.jdt.annotation.Nullable;
  * Helper to check if string can be a date
  *
  * @author Charlotte
- *
  */
 public class DateHelper {
 
     private static TimeZone TIMEZONES[] = { TimeZone.getTimeZone("UTC"), TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getTimeZone("PST"), TimeZone.getTimeZone("Europe/Warsaw"),
             TimeZone.getTimeZone("CET"), };
 
+    /**
+     * Map to match date format.
+     */
     @NonNull
-    public static Map<@NonNull String, @NonNull String> dateNameFormatMap = new HashMap<>();
+    public static Map<@NonNull String, @NonNull String> DATENAMEFORMATMAP = new HashMap<>();
 
     static {
-        DateHelper.dateNameFormatMap.put("DateYearMonthDaySlash", "yyyy/MM/dd");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayDash", "yyyy-MM-dd");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayDot", "yyyy.MM.dd");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearSlash", "dd/MM/yyyy");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearDash", "dd-MM-yyyy");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearDot", "dd.MM.yyyy");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayTHourSlash", "yyyy/MM/dd'T'HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayTHourDash", "yyyy-MM-dd'T'HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayTHourDot", "yyyy.MM.dd'T'HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayTHourDotTimeZone", "yyyy.MM.dd'T'HH:mm:ssZ");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayTHourDashTimeZone", "yyyy-MM-dd'T'HH:mm:ssZ");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearTHourSlash", "dd/MM/yyyy'T'HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearTHourDash", "dd-MM-yyyy'T'HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearTHourDot", "dd.MM.yyyy'T'HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayHourSlash", "yyyy/MM/dd HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayHourDash", "yyyy-MM-dd HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYearMonthDayHourDot", "yyyy.MM.dd HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearHourSlash", "dd/MM/yyyy HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearHourDash", "dd-MM-yyyy HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateDayMonthYearHourDot", "dd.MM.yyyy HH:mm:ss");
-        DateHelper.dateNameFormatMap.put("DateYear", "yyyy");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDaySlash", "yyyy/MM/dd");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayDash", "yyyy-MM-dd");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayDot", "yyyy.MM.dd");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearSlash", "dd/MM/yyyy");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearDash", "dd-MM-yyyy");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearDot", "dd.MM.yyyy");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayTHourSlash", "yyyy/MM/dd'T'HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayTHourDash", "yyyy-MM-dd'T'HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayTHourDot", "yyyy.MM.dd'T'HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayTHourDotTimeZone", "yyyy.MM.dd'T'HH:mm:ssZ");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayTHourDashTimeZone", "yyyy-MM-dd'T'HH:mm:ssZ");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearTHourSlash", "dd/MM/yyyy'T'HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearTHourDash", "dd-MM-yyyy'T'HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearTHourDot", "dd.MM.yyyy'T'HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayHourSlash", "yyyy/MM/dd HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayHourDash", "yyyy-MM-dd HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDayHourDot", "yyyy.MM.dd HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearHourSlash", "dd/MM/yyyy HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearHourDash", "dd-MM-yyyy HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateDayMonthYearHourDot", "dd.MM.yyyy HH:mm:ss");
+        DateHelper.DATENAMEFORMATMAP.put("DateYear", "yyyy");
     }
 
     private DateHelper() {
@@ -54,13 +56,14 @@ public class DateHelper {
     }
 
     /**
-     * @param value
-     *            String to parse
+     * Parse the given date.
+     *
+     * @param value String to parse
      * @return format of date, null if not exist
      */
     @Nullable
     public static String parseDate(@NonNull final String value) {
-        for (final Entry<@NonNull String, @NonNull String> entry : DateHelper.dateNameFormatMap.entrySet()) {
+        for (final Entry<@NonNull String, @NonNull String> entry : DateHelper.DATENAMEFORMATMAP.entrySet()) {
             final String pattern = entry.getValue();
             final String name = entry.getKey();
             final boolean d = DateHelper.parseWithPatterns(value, pattern);
@@ -85,7 +88,7 @@ public class DateHelper {
             } else {
                 return s.equals(sdf.format(date));
             }
-        } catch (final ParseException e) {
+        } catch (@SuppressWarnings("unused") final ParseException e) {
             return false;
         }
         return false;

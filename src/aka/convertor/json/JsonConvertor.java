@@ -9,16 +9,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import aka.convertor.json.constants.AnnotationType;
 import aka.convertor.json.constants.Generator;
-import aka.convertor.json.data.Component;
 import aka.convertor.json.data.DeserialiseItem;
 import aka.convertor.json.data.Deserialiser;
+import aka.convertor.json.data.JSONComponent;
 import aka.convertor.json.data.ObjectMetaData;
+import aka.convertor.json.helpers.LoggerHelper;
 import aka.convertor.json.helpers.StringUtilities;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -139,7 +141,7 @@ public class JsonConvertor {
                     for (final DeserialiseItem deserialiseItem : subDeserializers) {
                         final Map<String, Object> data = new HashMap<String, Object>();
                         data.put("package", deserializersString);
-                        final Component component = new Component(deserialiseItem.getName(), this.annotation, author);
+                        final JSONComponent component = new JSONComponent(deserialiseItem.getName(), this.annotation, author);
                         data.put("comp", component);
                         data.put("deserialiser", deserialiseItem);
 
@@ -164,7 +166,7 @@ public class JsonConvertor {
             // Load the template
             final Map<String, Object> data = new HashMap<String, Object>();
             data.put("package", this.packageName);
-            final Component component = new Component(this.name, this.annotation, author);
+            final JSONComponent component = new JSONComponent(this.name, this.annotation, author);
             data.put("comp", component);
             data.put("isRootAnArray", this.jsonMetaData.isRootAnArray());
             data.put("useList", this.useList);
@@ -174,7 +176,6 @@ public class JsonConvertor {
             templateMapper.process(data, out);
             out.flush();
         } catch (final IOException e) {
-            e.printStackTrace();
         } catch (final TemplateException e) {
             e.printStackTrace();
         }
@@ -186,10 +187,10 @@ public class JsonConvertor {
             final Template template = cfg.getTemplate(this.generator.getPojoTpl());
             final ArrayList<ObjectMetaData> objects = this.jsonMetaData.getObjects();
             for (final ObjectMetaData object : objects) {
-                final Map<String, Object> data = new HashMap<String, Object>();
+                final Map<@NonNull String, Object> data = new HashMap<>();
                 data.put("package", this.packageName);
-                final Component component = new Component(object.getJavaObjectName(), this.annotation, author);
-                component.setNodes(object.getFields());
+                final JSONComponent component = new JSONComponent(object.getJavaObjectName(), this.annotation, author);
+                component.setFields(object.getFields());
                 data.put("comp", component);
                 data.put("deserialisers", subPath);
                 data.put("useList", this.useList);
@@ -200,9 +201,9 @@ public class JsonConvertor {
                 out.flush();
             }
         } catch (final IOException e) {
-            e.printStackTrace();
+            LoggerHelper.getLogger().log(Level.SEVERE, e.getMessage(), e.getCause());
         } catch (final TemplateException e) {
-            e.printStackTrace();
+            LoggerHelper.getLogger().log(Level.SEVERE, e.getMessage(), e.getCause());
         }
     }
 }
