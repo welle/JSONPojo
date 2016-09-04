@@ -91,6 +91,8 @@ public class FieldMetaData {
             setType(BigDecimal.class, isArray);
         } else if (jsonNode.isBigInteger()) {
             setType(BigInteger.class, isArray);
+        } else if (jsonNode.isTextual()) {
+            setType(String.class, isArray);
         } else if (jsonNode.isBinary()) {
             setType(byte[].class, isArray);
         } else if (jsonNode.isBoolean()) {

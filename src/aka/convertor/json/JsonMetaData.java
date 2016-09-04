@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +28,8 @@ import aka.convertor.json.data.ObjectMetaData;
  */
 public class JsonMetaData {
 
+    @NonNull
+    private final static Logger LOGGER = Logger.getLogger(JsonMetaData.class.getCanonicalName());
     private final Map<@NonNull String, @Nullable ObjectMetaData> objects = new HashMap<>();
     private final Map<@NonNull String, @Nullable Deserialiser> deserialiseList = new HashMap<>();
     private boolean isRootAnArray;
@@ -48,11 +52,9 @@ public class JsonMetaData {
             final Map<@NonNull String, @NonNull FieldMetaData> objectsList = tmd.getObjects();
             getAllObject(objectsList);
         } catch (final JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.logp(Level.SEVERE, "JsonMetaData", "JsonMetaData", e.getMessage(), e);
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.logp(Level.SEVERE, "JsonMetaData", "JsonMetaData", e.getMessage(), e);
         }
     }
 

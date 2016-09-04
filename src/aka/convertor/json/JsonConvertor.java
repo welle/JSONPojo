@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +27,15 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
+/**
+ * Convert JSON String to java objects.
+ *
+ * @author Welle Charlotte
+ */
 public class JsonConvertor {
+
+    @NonNull
+    private static final Logger LOGGER = Logger.getLogger(JsonConvertor.class.getName());
 
     @NonNull
     private final JsonMetaData jsonMetaData;
@@ -39,9 +48,17 @@ public class JsonConvertor {
     @NonNull
     private final String packageName;
     @NonNull
-    private Generator generator = Generator.JACKSON;
+    private Generator generatorToUse = Generator.JACKSON;
     private boolean useList = true;
 
+    /**
+     * Constructor.
+     *
+     * @param packageName package name for the java objects
+     * @param name name of the main class
+     * @param jsonToParse JSON to parse
+     * @param path path where to save files
+     */
     public JsonConvertor(@NonNull final String packageName, @NonNull final String name, @NonNull final String jsonToParse, @NonNull final String path) {
         this.jsonMetaData = new JsonMetaData(name, jsonToParse);
         this.packageName = packageName;
@@ -49,40 +66,106 @@ public class JsonConvertor {
         this.path = path;
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param subPath sub path
+     * @param author author to display in java generated files
+     * @param annotationType annotation type (eclipse or JSR)
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, @NonNull final AnnotationType annotationType) {
         this.annotation = annotationType;
         generateAll(generator, subPath, author);
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param subPath sub path
+     * @param author author to display in java generated files
+     * @param annotationType annotation type (eclipse or JSR)
+     * @param useList
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, @NonNull final AnnotationType annotationType, final boolean useList) {
         this.annotation = annotationType;
         this.useList = useList;
         generateAll(generator, subPath, author);
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param subPath sub path
+     * @param author author to display in java generated files
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, final boolean useList) {
         this.useList = useList;
         generateAll(generator, subPath, author);
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param subPath sub path
+     * @param annotationType annotation type (eclipse or JSR)
+     * @param useList
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @NonNull final AnnotationType annotationType, final boolean useList) {
         this.annotation = annotationType;
         this.useList = useList;
         generateAll(generator, subPath, null);
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param subPath sub path
+     * @param useList
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, final boolean useList) {
         this.useList = useList;
         generateAll(generator, subPath, null);
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param useList
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, final boolean useList) {
         this.useList = useList;
         generateAll(generator, null, null);
     }
 
+    /**
+     * Generate all files.
+     *
+     * @param generator generator (GSON or Jackson)
+     * @param subPath sub path
+     * @param author author to display in java generated files
+     * @see Generator
+     * @see AnnotationType
+     */
     public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author) {
-        this.generator = generator;
+        this.generatorToUse = generator;
         // objects
         final Configuration cfg = getConfiguration();
         generatePojos(subPath, author, cfg);
@@ -118,7 +201,7 @@ public class JsonConvertor {
                     if (!theDir.exists()) {
                         try {
                             theDir.mkdir();
-                        } catch (final SecurityException se) {
+                        } catch (@SuppressWarnings("unused") final SecurityException se) {
                             // handle it
                         }
                     }
@@ -132,14 +215,14 @@ public class JsonConvertor {
             for (final Deserialiser deserialiser : deserializers) {
                 Template template = null;
                 if ("Date".equals(deserialiser.getType())) {
-                    template = cfg.getTemplate(this.generator.getDeserialiserDateTpl());
+                    template = cfg.getTemplate(this.generatorToUse.getDeserialiserDateTpl());
                 } else if ("URL".equals(deserialiser.getType())) {
-                    template = cfg.getTemplate(this.generator.getDeserialiserURLTpl());
+                    template = cfg.getTemplate(this.generatorToUse.getDeserialiserURLTpl());
                 }
                 if (template != null) {
                     final List<DeserialiseItem> subDeserializers = deserialiser.getItems();
                     for (final DeserialiseItem deserialiseItem : subDeserializers) {
-                        final Map<String, Object> data = new HashMap<String, Object>();
+                        final Map<String, Object> data = new HashMap<>();
                         data.put("package", deserializersString);
                         final JSONComponent component = new JSONComponent(deserialiseItem.getName(), this.annotation, author);
                         data.put("comp", component);
@@ -153,18 +236,17 @@ public class JsonConvertor {
                 }
             }
         } catch (final IOException e) {
-            e.printStackTrace();
+            LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateDeserialisers", e.getMessage(), e);
         } catch (final TemplateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateDeserialisers", e.getMessage(), e);
         }
     }
 
     private void generateObjectMapper(@Nullable final String author, @NonNull final Configuration cfg) {
         try {
-            final Template templateMapper = cfg.getTemplate(this.generator.getObjectMapperTpl());
+            final Template templateMapper = cfg.getTemplate(this.generatorToUse.getObjectMapperTpl());
             // Load the template
-            final Map<String, Object> data = new HashMap<String, Object>();
+            final Map<String, Object> data = new HashMap<>();
             data.put("package", this.packageName);
             final JSONComponent component = new JSONComponent(this.name, this.annotation, author);
             data.put("comp", component);
@@ -176,15 +258,16 @@ public class JsonConvertor {
             templateMapper.process(data, out);
             out.flush();
         } catch (final IOException e) {
+            LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateObjectMapper", e.getMessage(), e);
         } catch (final TemplateException e) {
-            e.printStackTrace();
+            LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateObjectMapper", e.getMessage(), e);
         }
     }
 
     private void generatePojos(@Nullable final String subPath, @Nullable final String author, @NonNull final Configuration cfg) {
         try {
             // Load the template
-            final Template template = cfg.getTemplate(this.generator.getPojoTpl());
+            final Template template = cfg.getTemplate(this.generatorToUse.getPojoTpl());
             final ArrayList<ObjectMetaData> objects = this.jsonMetaData.getObjects();
             for (final ObjectMetaData object : objects) {
                 final Map<@NonNull String, Object> data = new HashMap<>();

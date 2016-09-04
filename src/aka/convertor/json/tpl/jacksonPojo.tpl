@@ -1,8 +1,8 @@
 package ${package};
 <#assign myList = []>
-<#assign compSize = comp.getNodes()?size - 1>
+<#assign compSize = comp.getFields()?size - 1>
 
-<#list comp.getNodes() as column>  
+<#list comp.getFields() as column>  
 	<#if column.getJavaType() == "URI">
 import java.net.URI;
 	<#break>
@@ -11,7 +11,7 @@ import java.net.URI;
 <#if comp.containList() == true>
 import java.util.ArrayList;
 </#if>
-<#list comp.getNodes() as column>  
+<#list comp.getFields() as column>  
 	<#if column.getJavaType() == "Date">
 import java.util.Date;
 	<#break>
@@ -21,26 +21,26 @@ import java.util.Date;
 import java.util.List;
 
 </#if>
-<#if comp.getAnnotations() == "eclipse">
+<#if comp.getAnnotation() == "eclipse">
 	<#if comp.containList() == true>
 import org.eclipse.jdt.annotation.NonNull;
 	</#if>
-	<#elseif comp.getAnnotations() == "jsr">
+	<#elseif comp.getAnnotation() == "jsr">
 	<#if comp.containList() == true>
 import javax.annotation.Nonnull;
 	</#if>
 </#if>
-<#list comp.getNodes() as column>  
+<#list comp.getFields() as column>  
 	<#if column.getJavaType() != "List">
-		<#if comp.getAnnotations() == "eclipse">
+		<#if comp.getAnnotation() == "eclipse">
 import org.eclipse.jdt.annotation.Nullable;
-		<#elseif comp.getAnnotations() == "jsr">
+		<#elseif comp.getAnnotation() == "jsr">
 import javax.annotation.Nullable;
 		</#if>
 		<#break>
 	</#if>
 </#list>
-<#list comp.getNodes() as column>  
+<#list comp.getFields() as column>  
 	<#if column.getJavaType() == "Date" || column.getJavaType() == "URI">
 		<#if (!myList?seq_contains(column.getDeserName()))>
 			<#assign myList = myList + [column.getDeserName()]>
@@ -69,14 +69,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonIgnoreProperties(ignoreUnknown = true) 
 public final class ${comp.getName()?cap_first} {
 
-<#list comp.getNodes() as column> 
+<#list comp.getFields() as column> 
 	<#if (column.getSerName() != column.getParamName())>
     @JsonProperty("${column.getSerName()}")
 	</#if>
 	<#if (column.getJavaType() == "List" )>
-		<#if comp.getAnnotations() == "eclipse">
+		<#if comp.getAnnotation() == "eclipse">
 	@NonNull
-		<#elseif comp.getAnnotations() == "jsr">
+		<#elseif comp.getAnnotation() == "jsr">
 	@Nonnull
 		</#if>
     private List<${column.getJavaSubType()}> ${column.getParamName()} = new ArrayList<>();
@@ -87,9 +87,9 @@ public final class ${comp.getName()?cap_first} {
     @JsonDeserialize(using = ${column.getDeserName()}Deserializer.class)
     private ${column.getJavaType()} ${column.getParamName()};
 	<#else>
-		<#if comp.getAnnotations() == "eclipse">
+		<#if comp.getAnnotation() == "eclipse">
 	@Nullable
-		<#elseif comp.getAnnotations() == "jsr">
+		<#elseif comp.getAnnotation() == "jsr">
 	@Nullable
 		</#if>
     private ${column.getJavaType()} ${column.getParamName()};
@@ -106,16 +106,16 @@ public final class ${comp.getName()?cap_first} {
     /**
      * Filling Constructor.
      *
-<#list comp.getNodes() as column> 
+<#list comp.getFields() as column> 
      * @param ${column.getParamName()}Param <#if (column.getJavaType() == "List")>List<${column.getJavaSubType()}<#else>${column.getJavaType()}</#if>
 </#list>
      */
-    public ${comp.getName()?cap_first}(<#list comp.getNodes() as column><#if comp.getAnnotations() == "eclipse"><#if (column.getJavaType() == "List" )>@NonNull<#else>@Nullable</#if><#elseif comp.getAnnotations() == "jsr"><#if (column.getJavaType() == "List" )>@Nonnull<#else>@Nullable</#if></#if> final <#if (column.getJavaType() == "List" )>List<${column.getJavaSubType()}> ${column.getParamName()}Param<#else>${column.getJavaType()} ${column.getParamName()}Param</#if><#if (column_index != compSize)>, </#if></#list>) {
-<#list comp.getNodes() as column> 
+    public ${comp.getName()?cap_first}(<#list comp.getFields() as column><#if comp.getAnnotation() == "eclipse"><#if (column.getJavaType() == "List" )>@NonNull<#else>@Nullable</#if><#elseif comp.getAnnotation() == "jsr"><#if (column.getJavaType() == "List" )>@Nonnull<#else>@Nullable</#if></#if> final <#if (column.getJavaType() == "List" )>List<${column.getJavaSubType()}> ${column.getParamName()}Param<#else>${column.getJavaType()} ${column.getParamName()}Param</#if><#if (column_index != compSize)>, </#if></#list>) {
+<#list comp.getFields() as column> 
         this.${column.getParamName()} = ${column.getParamName()}Param;
 </#list>
     }
-<#list comp.getNodes() as column>
+<#list comp.getFields() as column>
     
     /**
      * Get value of ${column.getParamName()}.
@@ -123,18 +123,18 @@ public final class ${comp.getName()?cap_first} {
 <#if (column.getJavaType() == "List")>     
      * @return List<${column.getJavaSubType()}> value of ${column.getParamName()}
      */
-    <#if comp.getAnnotations() == "eclipse">
+    <#if comp.getAnnotation() == "eclipse">
     @NonNull
-	<#elseif comp.getAnnotations() == "jsr">
+	<#elseif comp.getAnnotation() == "jsr">
 	@Nonnull
 	</#if>
     public final List<${column.getJavaSubType()}> get${column.getParamName()?cap_first}() {
 <#else> 
      * @return ${column.getJavaType()} value of ${column.getParamName()}
      */
-    <#if comp.getAnnotations() == "eclipse">
+    <#if comp.getAnnotation() == "eclipse">
     @Nullable
-	<#elseif comp.getAnnotations() == "jsr">
+	<#elseif comp.getAnnotation() == "jsr">
 	@Nullable
 	</#if>
     public final ${column.getJavaType()} get${column.getParamName()?cap_first}() {
@@ -143,7 +143,7 @@ public final class ${comp.getName()?cap_first} {
     }
 </#list>
 
-<#list comp.getNodes() as column>
+<#list comp.getFields() as column>
     
     /**
      * Set value of ${column.getParamName()}.
@@ -151,10 +151,10 @@ public final class ${comp.getName()?cap_first} {
      * @param ${column.getParamName()}Param
 <#if (column.getJavaType() == "List")>     
      */
-    public final void get${column.getParamName()?cap_first}(<#if comp.getAnnotations() == "eclipse">@NonNull<#elseif comp.getAnnotations() == "jsr">@Nonnull</#if> final List<${column.getJavaSubType()}> ${column.getParamName()}Param) {
+    public final void get${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@NonNull<#elseif comp.getAnnotation() == "jsr">@Nonnull</#if> final List<${column.getJavaSubType()}> ${column.getParamName()}Param) {
 <#else> 
      */
-    public final void set${column.getParamName()?cap_first}(<#if comp.getAnnotations() == "eclipse">@Nullable<#elseif comp.getAnnotations() == "jsr">@Nullable</#if> final ${column.getJavaType()} ${column.getParamName()}Param) {
+    public final void set${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@Nullable<#elseif comp.getAnnotation() == "jsr">@Nullable</#if> final ${column.getJavaType()} ${column.getParamName()}Param) {
 </#if>
         this.${column.getParamName()} = ${column.getParamName()}Param;
     }
