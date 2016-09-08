@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class JsonMetaData {
 
     @NonNull
     private final static Logger LOGGER = Logger.getLogger(JsonMetaData.class.getCanonicalName());
-    private final Map<@NonNull String, @Nullable ObjectMetaData> objects = new HashMap<>();
+    private final Map<@NonNull String, @Nullable ObjectMetaData> objects = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Map<@NonNull String, @Nullable Deserialiser> deserialiseList = new HashMap<>();
     private boolean isRootAnArray;
 
@@ -51,10 +52,34 @@ public class JsonMetaData {
 
             final Map<@NonNull String, @NonNull FieldMetaData> objectsList = tmd.getObjects();
             getAllObject(objectsList);
+
+            checkFieldsName(tmd.getFields());
         } catch (final JsonProcessingException e) {
             LOGGER.logp(Level.SEVERE, "JsonMetaData", "JsonMetaData", e.getMessage(), e);
         } catch (final IOException e) {
             LOGGER.logp(Level.SEVERE, "JsonMetaData", "JsonMetaData", e.getMessage(), e);
+        }
+    }
+
+    private void checkFieldsName(@NonNull final ArrayList<@NonNull FieldMetaData> fieldsList) {
+        final InsensitiveStringList fields = new InsensitiveStringList();
+        for (final @NonNull FieldMetaData fieldMetaData : fieldsList) {
+            String name = fieldMetaData.getParamName();
+
+            if (fields.contains(name)) {
+                // change field name
+                int i = 1;
+                while (fields.contains(name + i)) {
+                    i++;
+                }
+                final String newName = name + i;
+
+                fieldMetaData.setParamName(newName);
+
+                name = newName;
+            }
+            fields.add(name);
+
         }
     }
 
@@ -64,7 +89,6 @@ public class JsonMetaData {
             final FieldMetaData fieldMetaData = entry.getValue();
             final ObjectMetaData object = fieldMetaData.getObject();
             if (object != null) {
-                final ObjectMetaData parentObject = fieldMetaData.getParentObject();
                 if (this.objects.containsKey(name)) {
                     // change name
                     int i = 1;
@@ -76,6 +100,7 @@ public class JsonMetaData {
                     fieldMetaData.setFieldName(newName);
                     object.changeName(newName);
                     this.objects.put(newName, object);
+                    final ObjectMetaData parentObject = fieldMetaData.getParentObject();
                     parentObject.changeField(name, newName, fieldMetaData);
 
                     name = newName;
@@ -112,5 +137,18 @@ public class JsonMetaData {
 
     public boolean isRootAnArray() {
         return this.isRootAnArray;
+    }
+
+    private class InsensitiveStringList extends ArrayList<@NonNull String> {
+        @Override
+        public boolean contains(final Object o) {
+            final String paramStr = (String) o;
+            for (final String s : this) {
+                if (paramStr.equalsIgnoreCase(s)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

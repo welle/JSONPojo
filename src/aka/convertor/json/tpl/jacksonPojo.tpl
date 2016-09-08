@@ -107,7 +107,7 @@ public final class ${comp.getName()?cap_first} {
      * Filling Constructor.
      *
 <#list comp.getFields() as column> 
-     * @param ${column.getParamName()}Param <#if (column.getJavaType() == "List")>List<${column.getJavaSubType()}<#else>${column.getJavaType()}</#if>
+     * @param ${column.getParamName()}Param <#if (column.getJavaType() == "List")>List<${column.getJavaSubType()}><#else>${column.getJavaType()}</#if>
 </#list>
      */
     public ${comp.getName()?cap_first}(<#list comp.getFields() as column><#if comp.getAnnotation() == "eclipse"><#if (column.getJavaType() == "List" )>@NonNull<#else>@Nullable</#if><#elseif comp.getAnnotation() == "jsr"><#if (column.getJavaType() == "List" )>@Nonnull<#else>@Nullable</#if></#if> final <#if (column.getJavaType() == "List" )>List<${column.getJavaSubType()}> ${column.getParamName()}Param<#else>${column.getJavaType()} ${column.getParamName()}Param</#if><#if (column_index != compSize)>, </#if></#list>) {

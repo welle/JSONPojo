@@ -68,6 +68,12 @@ public final class StringUtilities {
             result = result.concat("Res");
         }
 
+        if (result != null && result.length() > 0) {
+            final String firstChar = result.substring(0, 1).toLowerCase();
+
+            result = firstChar + result.substring(1);
+        }
+
         return result;
     }
 

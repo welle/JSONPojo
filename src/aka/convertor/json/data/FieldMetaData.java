@@ -71,7 +71,7 @@ public class FieldMetaData {
 
         // simple field or object ?
 
-        if (((isArray && jsonNode.elements().next().fields().hasNext())) || jsonNode.isObject()) {
+        if (((isArray && (jsonNode.elements().hasNext() && jsonNode.elements().next().fields().hasNext()))) || jsonNode.isObject()) {
             // field is an object or an array of object/field
             this.size = 0;
             this.decimals = 0;
@@ -91,8 +91,6 @@ public class FieldMetaData {
             setType(BigDecimal.class, isArray);
         } else if (jsonNode.isBigInteger()) {
             setType(BigInteger.class, isArray);
-        } else if (jsonNode.isTextual()) {
-            setType(String.class, isArray);
         } else if (jsonNode.isBinary()) {
             setType(byte[].class, isArray);
         } else if (jsonNode.isBoolean()) {
@@ -130,8 +128,8 @@ public class FieldMetaData {
                         } else {
                             setType(String.class, isArray);
                         }
-                    } catch (final MalformedURLException e) {
-                    } catch (final URISyntaxException e) {
+                    } catch (final MalformedURLException | URISyntaxException e) {
+                        setType(String.class, isArray);
                     }
                 } else {
                     setType(Date.class, isArray);
@@ -250,5 +248,9 @@ public class FieldMetaData {
     @NonNull
     public JsonMetaData getJsonMetaData() {
         return this.jsonMetaData;
+    }
+
+    public void setParamName(@NonNull final String newName) {
+        this.paramName = newName;
     }
 }
