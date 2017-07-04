@@ -3,6 +3,11 @@ package aka.convertor.json.data;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * Deserializer item.
+ *
+ * @author charlottew
+ */
 public class DeserialiseItem {
 
     @NonNull
@@ -11,6 +16,8 @@ public class DeserialiseItem {
     private final String format;
 
     /**
+     * Constructor.
+     *
      * @param name
      * @param format
      */
@@ -19,11 +26,21 @@ public class DeserialiseItem {
         this.format = format;
     }
 
+    /**
+     * Get format.
+     *
+     * @return format
+     */
     @Nullable
     public String getFormat() {
         return this.format;
     }
 
+    /**
+     * Get name.
+     *
+     * @return name
+     */
     @NonNull
     public String getName() {
         return this.name;

@@ -12,7 +12,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Helper to check if string can be a date
+ * Helper to check if string can be a date.
  *
  * @author Charlotte
  */
@@ -25,7 +25,7 @@ public class DateHelper {
      * Map to match date format.
      */
     @NonNull
-    public static Map<@NonNull String, @NonNull String> DATENAMEFORMATMAP = new HashMap<>();
+    public static Map<String, String> DATENAMEFORMATMAP = new HashMap<>();
 
     static {
         DateHelper.DATENAMEFORMATMAP.put("DateYearMonthDaySlash", "yyyy/MM/dd");
@@ -63,9 +63,11 @@ public class DateHelper {
      */
     @Nullable
     public static String parseDate(@NonNull final String value) {
-        for (final Entry<@NonNull String, @NonNull String> entry : DateHelper.DATENAMEFORMATMAP.entrySet()) {
+        for (final Entry<String, String> entry : DateHelper.DATENAMEFORMATMAP.entrySet()) {
             final String pattern = entry.getValue();
             final String name = entry.getKey();
+            assert pattern != null;
+            assert name != null;
             final boolean d = DateHelper.parseWithPatterns(value, pattern);
             if (d) {
                 return name;
@@ -88,7 +90,7 @@ public class DateHelper {
             } else {
                 return s.equals(sdf.format(date));
             }
-        } catch (@SuppressWarnings("unused") final ParseException e) {
+        } catch (final ParseException e) {
             return false;
         }
         return false;

@@ -68,7 +68,7 @@ public final class StringUtilities {
             result = result.concat("Res");
         }
 
-        if (result != null && result.length() > 0) {
+        if (result.length() > 0) {
             final String firstChar = result.substring(0, 1).toLowerCase();
 
             result = firstChar + result.substring(1);
@@ -80,7 +80,7 @@ public final class StringUtilities {
     private static boolean isNumber(@NonNull final String string) {
         try {
             Long.parseLong(string);
-        } catch (@SuppressWarnings("unused") final Exception e) {
+        } catch (final Exception e) {
             return false;
         }
         return true;

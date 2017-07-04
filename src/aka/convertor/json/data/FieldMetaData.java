@@ -18,6 +18,11 @@ import aka.convertor.json.helpers.DateHelper;
 import aka.convertor.json.helpers.StringUtilities;
 import aka.convertor.json.helpers.URLHelper;
 
+/**
+ * Field Meta data.
+ *
+ * @author charlottew
+ */
 public class FieldMetaData {
 
     private final int size;
@@ -215,6 +220,11 @@ public class FieldMetaData {
         return this.size;
     }
 
+    /**
+     * Set field name.
+     *
+     * @param newName
+     */
     public void setFieldName(@NonNull final String newName) {
         this.localName = StringUtilities.getLocalName(newName);
         this.paramName = StringUtilities.getLocalName(newName);
@@ -227,29 +237,59 @@ public class FieldMetaData {
         }
     }
 
+    /**
+     * Is current field is an object ?
+     *
+     * @return <code>true</code> if current field is an object
+     */
     boolean isObject() {
         return this.isObject;
     }
 
+    /**
+     * Get parent object.
+     *
+     * @return parent object
+     */
     @NonNull
     public ObjectMetaData getParentObject() {
         return this.parentObject;
     }
 
+    /**
+     * Get object.
+     *
+     * @return object
+     */
     @Nullable
     public ObjectMetaData getObject() {
         return this.object;
     }
 
+    /**
+     * Is <code>true</code> if current field is a list ?
+     *
+     * @return <code>true</code> if current field is a list
+     */
     public boolean isAList() {
         return List.class.getSimpleName().equals(this.javaType);
     }
 
+    /**
+     * Get JSON metadata.
+     *
+     * @return json metadata
+     */
     @NonNull
     public JsonMetaData getJsonMetaData() {
         return this.jsonMetaData;
     }
 
+    /**
+     * Set parameter name.
+     *
+     * @param newName
+     */
     public void setParamName(@NonNull final String newName) {
         this.paramName = newName;
     }

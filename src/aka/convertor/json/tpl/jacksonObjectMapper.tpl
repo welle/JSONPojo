@@ -64,7 +64,7 @@ public final class ${comp.getName()}JacksonMapper {
             final ObjectMapper objectMapper = new ObjectMapper();
             final JsonFactory jsonFactory = new JsonFactory();
             
-            final JsonParser jp = jsonFactory.createJsonParser(jsonString);
+            final JsonParser jp = jsonFactory.createParser(jsonString);
             <#if isRootAnArray>
 				<#if useList>
 			${comp.getName()}[] temp = objectMapper.readValue(jp, ${comp.getName()}[].class);

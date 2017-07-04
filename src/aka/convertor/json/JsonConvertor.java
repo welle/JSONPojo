@@ -88,13 +88,13 @@ public class JsonConvertor {
      * @param subPath sub path
      * @param author author to display in java generated files
      * @param annotationType annotation type (eclipse or JSR)
-     * @param useList
+     * @param useListParam
      * @see Generator
      * @see AnnotationType
      */
-    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, @NonNull final AnnotationType annotationType, final boolean useList) {
+    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, @NonNull final AnnotationType annotationType, final boolean useListParam) {
         this.annotation = annotationType;
-        this.useList = useList;
+        this.useList = useListParam;
         generateAll(generator, subPath, author);
     }
 
@@ -104,11 +104,12 @@ public class JsonConvertor {
      * @param generator generator (GSON or Jackson)
      * @param subPath sub path
      * @param author author to display in java generated files
+     * @param useListParam
      * @see Generator
      * @see AnnotationType
      */
-    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, final boolean useList) {
-        this.useList = useList;
+    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @Nullable final String author, final boolean useListParam) {
+        this.useList = useListParam;
         generateAll(generator, subPath, author);
     }
 
@@ -118,13 +119,13 @@ public class JsonConvertor {
      * @param generator generator (GSON or Jackson)
      * @param subPath sub path
      * @param annotationType annotation type (eclipse or JSR)
-     * @param useList
+     * @param useListParam
      * @see Generator
      * @see AnnotationType
      */
-    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @NonNull final AnnotationType annotationType, final boolean useList) {
+    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, @NonNull final AnnotationType annotationType, final boolean useListParam) {
         this.annotation = annotationType;
-        this.useList = useList;
+        this.useList = useListParam;
         generateAll(generator, subPath, null);
     }
 
@@ -133,12 +134,12 @@ public class JsonConvertor {
      *
      * @param generator generator (GSON or Jackson)
      * @param subPath sub path
-     * @param useList
+     * @param useListParam
      * @see Generator
      * @see AnnotationType
      */
-    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, final boolean useList) {
-        this.useList = useList;
+    public void generateAll(@NonNull final Generator generator, @Nullable final String subPath, final boolean useListParam) {
+        this.useList = useListParam;
         generateAll(generator, subPath, null);
     }
 
@@ -146,12 +147,12 @@ public class JsonConvertor {
      * Generate all files.
      *
      * @param generator generator (GSON or Jackson)
-     * @param useList
+     * @param useListParam
      * @see Generator
      * @see AnnotationType
      */
-    public void generateAll(@NonNull final Generator generator, final boolean useList) {
-        this.useList = useList;
+    public void generateAll(@NonNull final Generator generator, final boolean useListParam) {
+        this.useList = useListParam;
         generateAll(generator, null, null);
     }
 
@@ -201,7 +202,7 @@ public class JsonConvertor {
                     if (!theDir.exists()) {
                         try {
                             theDir.mkdir();
-                        } catch (@SuppressWarnings("unused") final SecurityException se) {
+                        } catch (final SecurityException se) {
                             // handle it
                         }
                     }
@@ -250,8 +251,8 @@ public class JsonConvertor {
             data.put("package", this.packageName);
             final JSONComponent component = new JSONComponent(this.name, this.annotation, author);
             data.put("comp", component);
-            data.put("isRootAnArray", this.jsonMetaData.isRootAnArray());
-            data.put("useList", this.useList);
+            data.put("isRootAnArray", Boolean.valueOf(this.jsonMetaData.isRootAnArray()));
+            data.put("useList", Boolean.valueOf(this.useList));
 
             final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
             final Writer out = new OutputStreamWriter(fos);
@@ -276,7 +277,7 @@ public class JsonConvertor {
                 component.setFields(object.getFields());
                 data.put("comp", component);
                 data.put("deserialisers", subPath);
-                data.put("useList", this.useList);
+                data.put("useList", Boolean.valueOf(this.useList));
 
                 final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
                 final Writer out = new OutputStreamWriter(fos);

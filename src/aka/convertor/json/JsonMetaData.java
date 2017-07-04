@@ -50,7 +50,7 @@ public class JsonMetaData {
             final ObjectMetaData tmd = new ObjectMetaData(name, rootNode, this);
             this.objects.put(name, tmd);
 
-            final Map<@NonNull String, @NonNull FieldMetaData> objectsList = tmd.getObjects();
+            final Map<@NonNull String, FieldMetaData> objectsList = tmd.getObjects();
             getAllObject(objectsList);
 
             checkFieldsName(tmd.getFields());
@@ -83,30 +83,32 @@ public class JsonMetaData {
         }
     }
 
-    private void getAllObject(@NonNull final Map<@NonNull String, @NonNull FieldMetaData> objectsList) {
-        for (final Entry<@NonNull String, @NonNull FieldMetaData> entry : objectsList.entrySet()) {
+    private void getAllObject(@NonNull final Map<String, FieldMetaData> objectsList) {
+        for (final Entry<String, FieldMetaData> entry : objectsList.entrySet()) {
             String name = entry.getKey();
-            final FieldMetaData fieldMetaData = entry.getValue();
-            final ObjectMetaData object = fieldMetaData.getObject();
-            if (object != null) {
-                if (this.objects.containsKey(name)) {
-                    // change name
-                    int i = 1;
-                    while (this.objects.containsKey(name + i)) {
-                        i++;
+            if (name != null) {
+                final FieldMetaData fieldMetaData = entry.getValue();
+                final ObjectMetaData object = fieldMetaData.getObject();
+                if (object != null) {
+                    if (this.objects.containsKey(name)) {
+                        // change name
+                        int i = 1;
+                        while (this.objects.containsKey(name + i)) {
+                            i++;
+                        }
+                        final String newName = name + i;
+
+                        fieldMetaData.setFieldName(newName);
+                        object.changeName(newName);
+                        this.objects.put(newName, object);
+                        final ObjectMetaData parentObject = fieldMetaData.getParentObject();
+                        parentObject.changeField(name, newName, fieldMetaData);
+
+                        name = newName;
                     }
-                    final String newName = name + i;
-
-                    fieldMetaData.setFieldName(newName);
-                    object.changeName(newName);
-                    this.objects.put(newName, object);
-                    final ObjectMetaData parentObject = fieldMetaData.getParentObject();
-                    parentObject.changeField(name, newName, fieldMetaData);
-
-                    name = newName;
+                    this.objects.put(name, object);
+                    getAllObject(object.objects);
                 }
-                this.objects.put(name, object);
-                getAllObject(object.objects);
             }
         }
     }
@@ -114,16 +116,30 @@ public class JsonMetaData {
     /**
      * @return ArrayList<TableMetaData>
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @NonNull
-    public ArrayList<@NonNull ObjectMetaData> getObjects() {
+    public ArrayList<ObjectMetaData> getObjects() {
         return new ArrayList(Arrays.asList(this.objects.values().toArray()));
     }
 
+    /**
+     * Get List of deserialisers.
+     *
+     * @return list of deserialiser
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @NonNull
     public List<@NonNull Deserialiser> getDeserialisers() {
         return new ArrayList(Arrays.asList(this.deserialiseList.values().toArray()));
     }
 
+    /**
+     * Add deserialiser.
+     *
+     * @param type
+     * @param name
+     * @param pattern
+     */
     public void addDeserialiser(@NonNull final String type, @NonNull final String name, @Nullable final String pattern) {
         Deserialiser deserialiser = this.deserialiseList.get(type);
         if (deserialiser == null) {
@@ -135,11 +151,18 @@ public class JsonMetaData {
         deserialiser.addDeserialiseItem(name, item);
     }
 
+    /**
+     * Is root is an array ?
+     *
+     * @return <code>true</code> if root is an array
+     */
     public boolean isRootAnArray() {
         return this.isRootAnArray;
     }
 
     private class InsensitiveStringList extends ArrayList<@NonNull String> {
+        private static final long serialVersionUID = 2495762265652730221L;
+
         @Override
         public boolean contains(final Object o) {
             final String paramStr = (String) o;

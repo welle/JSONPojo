@@ -13,6 +13,7 @@ import aka.convertor.json.JsonConvertor;
 import aka.convertor.json.constants.AnnotationType;
 import aka.convertor.json.constants.Generator;
 
+@SuppressWarnings("javadoc")
 public class JSonConvertorUnitTest {
 
     @NonNull

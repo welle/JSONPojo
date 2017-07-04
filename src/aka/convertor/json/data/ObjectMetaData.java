@@ -15,7 +15,7 @@ import aka.convertor.json.JsonMetaData;
 import aka.convertor.json.helpers.StringUtilities;
 
 /**
- *
+ * Object Meta data.
  *
  * @author Welle Charlotte
  */
@@ -23,8 +23,11 @@ public class ObjectMetaData {
 
     @NonNull
     private String javaObjectName;
+    /**
+     * Objects in the current object.
+     */
     @NonNull
-    public final Map<@NonNull String, @NonNull FieldMetaData> objects = new HashMap<>();
+    public final Map<@NonNull String, FieldMetaData> objects = new HashMap<>();
     @NonNull
     private final Map<@NonNull String, @NonNull FieldMetaData> fields = new HashMap<>();
     private boolean containList = false;
@@ -83,22 +86,29 @@ public class ObjectMetaData {
     }
 
     /**
+     * Get fields.
+     *
      * @return ArrayList<FieldMetaData>
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public ArrayList<@NonNull FieldMetaData> getFields() {
         return new ArrayList(Arrays.asList(this.fields.values().toArray()));
     }
 
     /**
+     * Get objects.
+     *
      * @return ArrayList<FieldMetaData>
      */
     @NonNull
-    public Map<@NonNull String, @NonNull FieldMetaData> getObjects() {
+    public Map<@NonNull String, FieldMetaData> getObjects() {
         return this.objects;
     }
 
     /**
+     * Get java object name.
+     *
      * @return String
      */
     @NonNull
@@ -106,15 +116,32 @@ public class ObjectMetaData {
         return this.javaObjectName;
     }
 
+    /**
+     * Change field.
+     *
+     * @param name
+     * @param newName
+     * @param fieldMetaData
+     */
     public void changeField(@NonNull final String name, @NonNull final String newName, @NonNull final FieldMetaData fieldMetaData) {
         this.fields.remove(name);
         this.fields.put(newName, fieldMetaData);
     }
 
+    /**
+     * Change name.
+     *
+     * @param newName
+     */
     public void changeName(@NonNull final String newName) {
         this.javaObjectName = StringUtilities.getVariableName(newName);
     }
 
+    /**
+     * Contains a list ?
+     *
+     * @return <code>true</code> if contains a list.
+     */
     public boolean containList() {
         return this.containList;
     }
