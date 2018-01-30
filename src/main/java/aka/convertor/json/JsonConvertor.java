@@ -188,6 +188,8 @@ public class JsonConvertor {
     }
 
     private void generateDeserialisers(@Nullable final String subPath, @Nullable final String author, @NonNull final Configuration cfg) {
+        FileOutputStream fos = null;
+        Writer out = null;
         try {
             // Load the template
             final List<@NonNull Deserialiser> deserializers = this.jsonMetaData.getDeserialisers();
@@ -229,10 +231,12 @@ public class JsonConvertor {
                         data.put("comp", component);
                         data.put("deserialiser", deserialiseItem);
 
-                        final FileOutputStream fos = new FileOutputStream(filePath + StringUtilities.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
-                        final Writer out = new OutputStreamWriter(fos);
+                        fos = new FileOutputStream(filePath + StringUtilities.firstLetterUpperCase(deserialiseItem.getName()) + "Deserializer.java");
+                        out = new OutputStreamWriter(fos);
                         template.process(data, out);
                         out.flush();
+                        out.close();
+                        fos.close();
                     }
                 }
             }
@@ -240,10 +244,23 @@ public class JsonConvertor {
             LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateDeserialisers", e.getMessage(), e);
         } catch (final TemplateException e) {
             LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateDeserialisers", e.getMessage(), e);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (final IOException e) {
+                LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateDeserialisers", e.getMessage(), e);
+            }
         }
     }
 
     private void generateObjectMapper(@Nullable final String author, @NonNull final Configuration cfg) {
+        FileOutputStream fos = null;
+        Writer out = null;
         try {
             final Template templateMapper = cfg.getTemplate(this.generatorToUse.getObjectMapperTpl());
             // Load the template
@@ -254,18 +271,33 @@ public class JsonConvertor {
             data.put("isRootAnArray", Boolean.valueOf(this.jsonMetaData.isRootAnArray()));
             data.put("useList", Boolean.valueOf(this.useList));
 
-            final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
-            final Writer out = new OutputStreamWriter(fos);
+            fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
+            out = new OutputStreamWriter(fos);
             templateMapper.process(data, out);
             out.flush();
+            out.close();
+            fos.close();
         } catch (final IOException e) {
             LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateObjectMapper", e.getMessage(), e);
         } catch (final TemplateException e) {
             LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateObjectMapper", e.getMessage(), e);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (final IOException e) {
+                LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateObjectMapper", e.getMessage(), e);
+            }
         }
     }
 
     private void generatePojos(@Nullable final String subPath, @Nullable final String author, @NonNull final Configuration cfg) {
+        FileOutputStream fos = null;
+        Writer out = null;
         try {
             // Load the template
             final Template template = cfg.getTemplate(this.generatorToUse.getPojoTpl());
@@ -279,15 +311,28 @@ public class JsonConvertor {
                 data.put("deserialisers", subPath);
                 data.put("useList", Boolean.valueOf(this.useList));
 
-                final FileOutputStream fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
-                final Writer out = new OutputStreamWriter(fos);
+                fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
+                out = new OutputStreamWriter(fos);
                 template.process(data, out);
                 out.flush();
+                out.close();
+                fos.close();
             }
         } catch (final IOException e) {
             LoggerHelper.getLogger().log(Level.SEVERE, e.getMessage(), e.getCause());
         } catch (final TemplateException e) {
             LoggerHelper.getLogger().log(Level.SEVERE, e.getMessage(), e.getCause());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (final IOException e) {
+                LOGGER.logp(Level.SEVERE, "JsonConvertor", "generatePojos", e.getMessage(), e);
+            }
         }
     }
 }

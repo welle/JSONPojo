@@ -112,8 +112,6 @@ public class FieldMetaData {
             setType(Long.class, isArray);
         } else if (jsonNode.isNumber()) {
             setType(Number.class, isArray);
-        } else if (jsonNode.isBoolean()) {
-            setType(Boolean.class, isArray);
         } else {
             // check if this is a date
             final String value = jsonNode.textValue();
@@ -227,9 +225,8 @@ public class FieldMetaData {
      */
     public void setFieldName(@NonNull final String newName) {
         this.localName = StringUtilities.getLocalName(newName);
-        this.paramName = StringUtilities.getLocalName(newName);
-
-        if (List.class.getSimpleName().equals(this.javaType)) {
+        final String className = List.class.getSimpleName().toString();
+        if (className.equalsIgnoreCase(this.javaType)) {
             // this is a list
             this.JavaSubType = StringUtilities.firstLetterUpperCase(this.localName);
         } else {
@@ -272,7 +269,8 @@ public class FieldMetaData {
      * @return <code>true</code> if current field is a list
      */
     public boolean isAList() {
-        return List.class.getSimpleName().equals(this.javaType);
+        final String className = List.class.getSimpleName().toString();
+        return className.equalsIgnoreCase(this.javaType);
     }
 
     /**
