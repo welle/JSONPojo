@@ -180,9 +180,9 @@ public class JsonConvertor {
 
     @NonNull
     private Configuration getConfiguration() {
-        final Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
+        final Configuration cfg = new Configuration(Configuration.VERSION_2_3_23);
         // Configure Freemarker
-        cfg.setClassForTemplateLoading(getClass(), "./tpl");
+        cfg.setClassForTemplateLoading(JsonConvertor.class, "/tpl/");
         cfg.setDefaultEncoding("UTF-8");
         return cfg;
     }
