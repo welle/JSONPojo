@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -50,6 +51,8 @@ public class JsonConvertor {
     @NonNull
     private Generator generatorToUse = Generator.JACKSON;
     private boolean useList = true;
+    @NonNull
+    private final String basePackagePath;
 
     /**
      * Constructor.
@@ -64,6 +67,27 @@ public class JsonConvertor {
         this.packageName = packageName;
         this.name = name;
         this.path = path;
+        this.basePackagePath = packageName.replaceAll("\\.", "/");
+        final File theDir = new File(path + "/javasource/" + this.basePackagePath);
+        // if the directory does not exist, create it
+        if (!theDir.exists()) {
+            try {
+                FileUtils.forceMkdir(theDir);
+            } catch (final SecurityException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        final File theDirTest = new File(path + "/javasourceTest/" + this.basePackagePath);
+        // if the directory does not exist, create it
+        if (!theDirTest.exists()) {
+            try {
+                FileUtils.forceMkdir(theDirTest);
+            } catch (final SecurityException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -169,7 +193,30 @@ public class JsonConvertor {
         this.generatorToUse = generator;
         // objects
         final Configuration cfg = getConfiguration();
+
+        File theDir = new File(this.path + "/javasource/" + this.basePackagePath);
+        // if the directory does not exist, create it
+        if (!theDir.exists()) {
+            try {
+                theDir.mkdir();
+            } catch (final SecurityException se) {
+                // handle it
+            }
+        }
+        theDir = new File(this.path + "/javasourceTest/" + this.basePackagePath);
+        // if the directory does not exist, create it
+        if (!theDir.exists()) {
+            try {
+                theDir.mkdir();
+            } catch (final SecurityException se) {
+                // handle it
+            }
+        }
+
         generatePojos(subPath, author, cfg);
+
+        // Junit for object
+        generateJunitPojos(subPath, author, cfg);
 
         // object mapper
         generateObjectMapper(author, cfg);
@@ -194,7 +241,7 @@ public class JsonConvertor {
             // Load the template
             final List<@NonNull Deserialiser> deserializers = this.jsonMetaData.getDeserialisers();
 
-            String filePath = this.path + "/";
+            String filePath = this.path + "/javasource/" + this.basePackagePath;
             if (!deserializers.isEmpty()) {
                 if (subPath != null) {
                     filePath = filePath + subPath + "/";
@@ -271,7 +318,7 @@ public class JsonConvertor {
             data.put("isRootAnArray", Boolean.valueOf(this.jsonMetaData.isRootAnArray()));
             data.put("useList", Boolean.valueOf(this.useList));
 
-            fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
+            fos = new FileOutputStream(this.path + "/javasource/" + this.basePackagePath + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
             out = new OutputStreamWriter(fos);
             templateMapper.process(data, out);
             out.flush();
@@ -311,7 +358,7 @@ public class JsonConvertor {
                 data.put("deserialisers", subPath);
                 data.put("useList", Boolean.valueOf(this.useList));
 
-                fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
+                fos = new FileOutputStream(this.path + "/javasource/" + this.basePackagePath + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
                 out = new OutputStreamWriter(fos);
                 template.process(data, out);
                 out.flush();
@@ -332,6 +379,46 @@ public class JsonConvertor {
                 }
             } catch (final IOException e) {
                 LOGGER.logp(Level.SEVERE, "JsonConvertor", "generatePojos", e.getMessage(), e);
+            }
+        }
+    }
+
+    private void generateJunitPojos(@Nullable final String subPath, @Nullable final String author, @NonNull final Configuration cfg) {
+        FileOutputStream fos = null;
+        Writer out = null;
+        try {
+            // Load the template
+            final Template template = cfg.getTemplate(this.generatorToUse.getJunitPojoTpl());
+            final ArrayList<ObjectMetaData> objects = this.jsonMetaData.getObjects();
+            for (final ObjectMetaData object : objects) {
+                final Map<@NonNull String, Object> data = new HashMap<>();
+                data.put("package", this.packageName);
+                final JSONComponent component = new JSONComponent(object.getJavaObjectName(), this.annotation, author);
+                component.setFields(object.getFields());
+                data.put("comp", component);
+                data.put("useList", Boolean.valueOf(this.useList));
+
+                fos = new FileOutputStream(this.path + "/javasourceTest/" + this.basePackagePath + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + "_JUnitTest.java");
+                out = new OutputStreamWriter(fos);
+                template.process(data, out);
+                out.flush();
+                out.close();
+                fos.close();
+            }
+        } catch (final IOException e) {
+            LoggerHelper.getLogger().log(Level.SEVERE, e.getMessage(), e.getCause());
+        } catch (final TemplateException e) {
+            LoggerHelper.getLogger().log(Level.SEVERE, e.getMessage(), e.getCause());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (final IOException e) {
+                LOGGER.logp(Level.SEVERE, "JsonConvertor", "generateJunitPojos", e.getMessage(), e);
             }
         }
     }

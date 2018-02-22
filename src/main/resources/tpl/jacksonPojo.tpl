@@ -151,7 +151,7 @@ public final class ${comp.getName()?cap_first} {
      * @param ${column.getParamName()}Param
 <#if (column.getJavaType() == "List")>     
      */
-    public final void get${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@NonNull<#elseif comp.getAnnotation() == "jsr">@Nonnull</#if> final List<${column.getJavaSubType()}> ${column.getParamName()}Param) {
+    public final void set${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@NonNull<#elseif comp.getAnnotation() == "jsr">@Nonnull</#if> final List<${column.getJavaSubType()}> ${column.getParamName()}Param) {
 <#else> 
      */
     public final void set${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@Nullable<#elseif comp.getAnnotation() == "jsr">@Nullable</#if> final ${column.getJavaType()} ${column.getParamName()}Param) {

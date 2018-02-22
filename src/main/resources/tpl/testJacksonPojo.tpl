@@ -2,6 +2,14 @@ package ${package};
 <#assign myList = []>
 <#assign compSize = comp.getFields()?size - 1>
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+
 <#list comp.getFields() as column>  
 	<#if column.getJavaType() == "URI">
 import java.net.URI;
@@ -21,142 +29,82 @@ import java.util.Date;
 import java.util.List;
 
 </#if>
-<#if comp.getAnnotation() == "eclipse">
-	<#if comp.containList() == true>
-import org.eclipse.jdt.annotation.NonNull;
-	</#if>
-	<#elseif comp.getAnnotation() == "jsr">
-	<#if comp.containList() == true>
-import javax.annotation.Nonnull;
-	</#if>
-</#if>
-<#list comp.getFields() as column>  
-	<#if column.getJavaType() != "List">
-		<#if comp.getAnnotation() == "eclipse">
-import org.eclipse.jdt.annotation.Nullable;
-		<#elseif comp.getAnnotation() == "jsr">
-import javax.annotation.Nullable;
-		</#if>
-		<#break>
-	</#if>
-</#list>
 <#list comp.getFields() as column>  
 	<#if column.getJavaType() == "Date" || column.getJavaType() == "URI">
 		<#if (!myList?seq_contains(column.getDeserName()))>
 			<#assign myList = myList + [column.getDeserName()]>
-			<#if deserialisers??>
-import ${package}.${deserialisers}.${column.getDeserName()}Deserializer;
-			</#if>
 		</#if>
 	</#if>
 </#list>
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-<#if comp.containJsonProperty()>
-import com.fasterxml.jackson.annotation.JsonProperty;
-</#if>
-<#if myList?has_content>
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-</#if>
+import ${package}.${comp.getName()?cap_first};
 
 /**
- * This is a generated file.
+ * JUnit skeleton for the ${comp.getName()?cap_first} object.
 <#if comp.getAuthor()??>
  *
  * @author ${comp.getAuthor()}
 </#if>
  */ 
-@JsonIgnoreProperties(ignoreUnknown = true) 
-public final class ${comp.getName()?cap_first} {
-
-<#list comp.getFields() as column> 
-	<#if (column.getSerName() != column.getParamName())>
-    @JsonProperty("${column.getSerName()}")
-	</#if>
-	<#if (column.getJavaType() == "List" )>
-		<#if comp.getAnnotation() == "eclipse">
-	@NonNull
-		<#elseif comp.getAnnotation() == "jsr">
-	@Nonnull
-		</#if>
-    private List<${column.getJavaSubType()}> ${column.getParamName()} = new ArrayList<>();
-	<#elseif (column.getJavaType() == "Date" )>
-    @JsonDeserialize(using = ${column.getDeserName()}Deserializer.class)
-    private ${column.getJavaType()} ${column.getParamName()};
-    <#elseif (column.getJavaType() == "URI" )>
-    @JsonDeserialize(using = ${column.getDeserName()}Deserializer.class)
-    private ${column.getJavaType()} ${column.getParamName()};
-	<#else>
-		<#if comp.getAnnotation() == "eclipse">
-	@Nullable
-		<#elseif comp.getAnnotation() == "jsr">
-	@Nullable
-		</#if>
-    private ${column.getJavaType()} ${column.getParamName()};
-	</#if>
-</#list>
-
-	/**
-     * Empty Constructor.
-     */
-    public ${comp.getName()?cap_first}() {
-    	// Nothing to do
-    }
-
-    /**
-     * Filling Constructor.
-     *
-<#list comp.getFields() as column> 
-     * @param ${column.getParamName()}Param <#if (column.getJavaType() == "List")>List<${column.getJavaSubType()}><#else>${column.getJavaType()}</#if>
-</#list>
-     */
-    public ${comp.getName()?cap_first}(<#list comp.getFields() as column><#if comp.getAnnotation() == "eclipse"><#if (column.getJavaType() == "List" )>@NonNull<#else>@Nullable</#if><#elseif comp.getAnnotation() == "jsr"><#if (column.getJavaType() == "List" )>@Nonnull<#else>@Nullable</#if></#if> final <#if (column.getJavaType() == "List" )>List<${column.getJavaSubType()}> ${column.getParamName()}Param<#else>${column.getJavaType()} ${column.getParamName()}Param</#if><#if (column_index != compSize)>, </#if></#list>) {
-<#list comp.getFields() as column> 
-        this.${column.getParamName()} = ${column.getParamName()}Param;
-</#list>
-    }
-<#list comp.getFields() as column>
-    
-    /**
-     * Get value of ${column.getParamName()}.
-     *
-<#if (column.getJavaType() == "List")>     
-     * @return List<${column.getJavaSubType()}> value of ${column.getParamName()}
-     */
-    <#if comp.getAnnotation() == "eclipse">
-    @NonNull
-	<#elseif comp.getAnnotation() == "jsr">
-	@Nonnull
-	</#if>
-    public final List<${column.getJavaSubType()}> get${column.getParamName()?cap_first}() {
-<#else> 
-     * @return ${column.getJavaType()} value of ${column.getParamName()}
-     */
-    <#if comp.getAnnotation() == "eclipse">
-    @Nullable
-	<#elseif comp.getAnnotation() == "jsr">
-	@Nullable
-	</#if>
-    public final ${column.getJavaType()} get${column.getParamName()?cap_first}() {
-</#if>
-        return this.${column.getParamName()};
-    }
-</#list>
+public final class ${comp.getName()?cap_first}_JUnitTest {
 
 <#list comp.getFields() as column>
-    
     /**
-     * Set value of ${column.getParamName()}.
-     *
-     * @param ${column.getParamName()}Param
-<#if (column.getJavaType() == "List")>     
+     * get${column.getParamName()?cap_first} with an new ${comp.getName()?cap_first}.
      */
-    public final void get${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@NonNull<#elseif comp.getAnnotation() == "jsr">@Nonnull</#if> final List<${column.getJavaSubType()}> ${column.getParamName()}Param) {
-<#else> 
+    @org.junit.Test
+    public void testGet${column.getParamName()?cap_first}() {
+        // arrange : set up the test
+        final ${comp.getName()?cap_first} ${comp.getName()} = mock(${comp.getName()?cap_first}.class);
+        assert ${comp.getName()} != null;
+
+        // act : run the test
+        final ${column.getJavaType()} result = ${comp.getName()}.get${column.getParamName()?cap_first}();
+
+        // assert : verify that the test run correctly
+        assertNotNull(result);
+    }
+
+    /**
+     * set${column.getParamName()?cap_first} with an new ${comp.getName()?cap_first}.
      */
-    public final void set${column.getParamName()?cap_first}(<#if comp.getAnnotation() == "eclipse">@Nullable<#elseif comp.getAnnotation() == "jsr">@Nullable</#if> final ${column.getJavaType()} ${column.getParamName()}Param) {
+    @org.junit.Test
+    public void testSet${column.getParamName()?cap_first}() {
+        // arrange : set up the test
+        final ${comp.getName()?cap_first} ${comp.getName()} = mock(${comp.getName()?cap_first}.class);
+        assert ${comp.getName()} != null;
+
+        // act : run the test
+        // TODO set proper expected value
+<#if column.getJavaType() == "Date">
+        final ${column.getJavaType()} expectedValue = new Date();
+<#elseif column.getJavaType() == "String">
+        final ${column.getJavaType()} expectedValue = "X";
+<#elseif column.getJavaType() == "BigDecimal">
+        final ${column.getJavaType()} expectedValue = new BigDecimal("42");
+<#elseif column.getJavaType() == "byte[]">
+        final ${column.getJavaType()} expectedValue = new byte[27];
+<#elseif column.getJavaType() == "Double">
+        final ${column.getJavaType()} expectedValue = Double.valueOf(24);
+<#elseif column.getJavaType() == "Long">
+        final ${column.getJavaType()} expectedValue = Long.valueOf(1);
+<#elseif column.getJavaType() == "List">
+        final List<${column.getJavaSubType()}> expectedValue = new ArrayList<>();
+        ${column.getJavaSubType()} ${column.getJavaSubType()?uncap_first}Item = new ${column.getJavaSubType()}();
+        expectedValue.add(${column.getJavaSubType()?uncap_first}Item);
+<#else>
+        final ${column.getJavaType()} expectedValue = null;
+</#if>        
+        ${comp.getName()}.set${column.getParamName()?cap_first}(expectedValue);
+<#if column.getJavaType() == "List">
+        final List<${column.getJavaSubType()}> result = ${comp.getName()}.get${column.getParamName()?cap_first}();
+<#else>
+        final ${column.getJavaType()} result = ${comp.getName()}.get${column.getParamName()?cap_first}();
 </#if>
-        this.${column.getParamName()} = ${column.getParamName()}Param;
+
+        // assert : verify that the test run correctly
+        assertEquals(expectedValue, result);
+        // TODO add extra validations
     }
 </#list>
 }

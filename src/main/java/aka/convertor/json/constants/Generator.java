@@ -13,12 +13,12 @@ public enum Generator {
     /**
      * GSON generator.
      */
-    GSON("gsonPojo.tpl", "gsonObjectMapper.tpl", null, null),
+    GSON("gsonPojo.tpl", "gsonObjectMapper.tpl", null, null, null),
 
     /**
      * Jackson generator.
      */
-    JACKSON("jacksonPojo.tpl", "jacksonObjectMapper.tpl", "jacksonDateDeserialiser.tpl", "jacksonURLDeserialiser.tpl");
+    JACKSON("jacksonPojo.tpl", "jacksonObjectMapper.tpl", "jacksonDateDeserialiser.tpl", "jacksonURLDeserialiser.tpl", "testJacksonPojo.tpl");
 
     @NonNull
     private String pojoTpl;
@@ -28,12 +28,15 @@ public enum Generator {
     private String deserialiserDateTpl;
     @Nullable
     private String deserialiserURLTpl;
+    @Nullable
+    private String junitPojoTpl;
 
-    private Generator(@NonNull final String pojoTpl, @NonNull final String objectMapperTpl, @Nullable final String deserialiserDateTpl, @Nullable final String deserialiserURLTpl) {
+    private Generator(@NonNull final String pojoTpl, @NonNull final String objectMapperTpl, @Nullable final String deserialiserDateTpl, @Nullable final String deserialiserURLTpl, @Nullable final String junitPojoTpl) {
         this.pojoTpl = pojoTpl;
         this.objectMapperTpl = objectMapperTpl;
         this.deserialiserDateTpl = deserialiserDateTpl;
         this.deserialiserURLTpl = deserialiserURLTpl;
+        this.junitPojoTpl = junitPojoTpl;
     }
 
     /**
@@ -44,6 +47,16 @@ public enum Generator {
     @NonNull
     public String getPojoTpl() {
         return this.pojoTpl;
+    }
+
+    /**
+     * Get JUnit POJO template.
+     *
+     * @return the junitPojoTpl
+     */
+    @Nullable
+    public String getJunitPojoTpl() {
+        return this.junitPojoTpl;
     }
 
     /**
