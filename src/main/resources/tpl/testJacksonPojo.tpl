@@ -37,7 +37,10 @@ import java.util.List;
 	</#if>
 </#list>
 
-import ${package}.${comp.getName()?cap_first};
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * JUnit skeleton for the ${comp.getName()?cap_first} object.
@@ -46,7 +49,9 @@ import ${package}.${comp.getName()?cap_first};
  * @author ${comp.getAuthor()}
 </#if>
  */ 
-public final class ${comp.getName()?cap_first}_JUnitTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ ${comp.getName()?cap_first}.class })
+public class ${comp.getName()?cap_first}_JUnitTest {
 
 <#list comp.getFields() as column>
     /**
