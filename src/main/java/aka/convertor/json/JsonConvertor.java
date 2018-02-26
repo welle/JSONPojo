@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -51,8 +50,7 @@ public class JsonConvertor {
     @NonNull
     private Generator generatorToUse = Generator.JACKSON;
     private boolean useList = true;
-    @NonNull
-    private final String basePackagePath;
+    private @NonNull final String pathTest;
 
     /**
      * Constructor.
@@ -62,32 +60,12 @@ public class JsonConvertor {
      * @param jsonToParse JSON to parse
      * @param path path where to save files
      */
-    public JsonConvertor(@NonNull final String packageName, @NonNull final String name, @NonNull final String jsonToParse, @NonNull final String path) {
+    public JsonConvertor(@NonNull final String packageName, @NonNull final String name, @NonNull final String jsonToParse, @NonNull final String path, @NonNull final String pathTest) {
         this.jsonMetaData = new JsonMetaData(name, jsonToParse);
         this.packageName = packageName;
         this.name = name;
         this.path = path;
-        this.basePackagePath = packageName.replaceAll("\\.", "/");
-        final File theDir = new File(path + "/javasource/" + this.basePackagePath);
-        // if the directory does not exist, create it
-        if (!theDir.exists()) {
-            try {
-                FileUtils.forceMkdir(theDir);
-            } catch (final SecurityException | IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        final File theDirTest = new File(path + "/javasourceTest/" + this.basePackagePath);
-        // if the directory does not exist, create it
-        if (!theDirTest.exists()) {
-            try {
-                FileUtils.forceMkdir(theDirTest);
-            } catch (final SecurityException | IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+        this.pathTest = pathTest;
     }
 
     /**
@@ -193,26 +171,6 @@ public class JsonConvertor {
         this.generatorToUse = generator;
         // objects
         final Configuration cfg = getConfiguration();
-
-        File theDir = new File(this.path + "/javasource/" + this.basePackagePath);
-        // if the directory does not exist, create it
-        if (!theDir.exists()) {
-            try {
-                theDir.mkdir();
-            } catch (final SecurityException se) {
-                // handle it
-            }
-        }
-        theDir = new File(this.path + "/javasourceTest/" + this.basePackagePath);
-        // if the directory does not exist, create it
-        if (!theDir.exists()) {
-            try {
-                theDir.mkdir();
-            } catch (final SecurityException se) {
-                // handle it
-            }
-        }
-
         generatePojos(subPath, author, cfg);
 
         // Junit for object
@@ -241,7 +199,7 @@ public class JsonConvertor {
             // Load the template
             final List<@NonNull Deserialiser> deserializers = this.jsonMetaData.getDeserialisers();
 
-            String filePath = this.path + "/javasource/" + this.basePackagePath;
+            String filePath = this.path + "/";
             if (!deserializers.isEmpty()) {
                 if (subPath != null) {
                     filePath = filePath + subPath + "/";
@@ -318,7 +276,7 @@ public class JsonConvertor {
             data.put("isRootAnArray", Boolean.valueOf(this.jsonMetaData.isRootAnArray()));
             data.put("useList", Boolean.valueOf(this.useList));
 
-            fos = new FileOutputStream(this.path + "/javasource/" + this.basePackagePath + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
+            fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(this.name) + "JacksonMapper.java");
             out = new OutputStreamWriter(fos);
             templateMapper.process(data, out);
             out.flush();
@@ -358,7 +316,7 @@ public class JsonConvertor {
                 data.put("deserialisers", subPath);
                 data.put("useList", Boolean.valueOf(this.useList));
 
-                fos = new FileOutputStream(this.path + "/javasource/" + this.basePackagePath + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
+                fos = new FileOutputStream(this.path + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + ".java");
                 out = new OutputStreamWriter(fos);
                 template.process(data, out);
                 out.flush();
@@ -398,7 +356,7 @@ public class JsonConvertor {
                 data.put("comp", component);
                 data.put("useList", Boolean.valueOf(this.useList));
 
-                fos = new FileOutputStream(this.path + "/javasourceTest/" + this.basePackagePath + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + "_JUnitTest.java");
+                fos = new FileOutputStream(this.pathTest + "/" + StringUtilities.firstLetterUpperCase(object.getJavaObjectName()) + "_JUnitTest.java");
                 out = new OutputStreamWriter(fos);
                 template.process(data, out);
                 out.flush();
