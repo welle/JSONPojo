@@ -103,6 +103,7 @@ public final class ${comp.getName()?cap_first} {
     	// Nothing to do
     }
 
+<#if (comp.getFields()?size > 0)>
     /**
      * Filling Constructor.
      *
@@ -115,6 +116,7 @@ public final class ${comp.getName()?cap_first} {
         this.${column.getParamName()} = ${column.getParamName()}Param;
 </#list>
     }
+</#if>
 <#list comp.getFields() as column>
     
     /**
