@@ -38,7 +38,7 @@ public class JsonConvertor {
     private static final Logger LOGGER = Logger.getLogger(JsonConvertor.class.getName());
 
     @NonNull
-    private final JsonMetaData jsonMetaData;
+    public final JsonMetaData jsonMetaData;
     @NonNull
     private final String path;
     @NonNull
