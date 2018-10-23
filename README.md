@@ -1,4 +1,4 @@
-# JSONpojo [![Build Status](https://travis-ci.org/welle/JSONPojo.svg?branch=master)](https://travis-ci.org/welle/JSONPojo) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=aka.jsonpojo:JSONpojo)](https://sonarcloud.io/dashboard/index/aka.jsonpojo:JSONpojo) #
+# JSONpojo [![Build Status](https://travis-ci.org/welle/JSONPojo.svg?branch=master)](https://travis-ci.org/welle/JSONPojo) [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=aka.jsonpojo%3AJSONpojo&metric=alert_status)](https://sonarcloud.io/api/project_badges/measure?project=aka.jsonpojo%3AJSONpojo&metric=alert_status) #
 
 Java library to create Java POJO from given JSON string
 
